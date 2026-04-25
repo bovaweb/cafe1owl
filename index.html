@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Wise Owl — The Coffee Shop & Steakhouse</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;0,900;1,400;1,700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --orange: #f39c12;
+      --orange-light: #f8b942;
+      --orange-glow: rgba(243,156,18,0.18);
+      --brown: #3e2723;
+      --brown-mid: #6d4c41;
+      --cream: #fffdfa;
+      --cream-warm: #fef9ef;
+      --obsidian: #1a120b;
+      --obsidian-soft: #221a10;
+      --text-light: #c8b89a;
+      --radius: 2.8rem;
+      --radius-sm: 1rem;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--cream);
+      color: var(--brown);
+      overflow-x: hidden;
+    }
+
+    /* ─── SCROLLBAR ─── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--obsidian); }
+    ::-webkit-scrollbar-thumb { background: var(--orange); border-radius: 3px; }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 1.4rem 3rem;
+      display: flex; align-items: center; justify-content: space-between;
+      transition: all 0.4s ease;
+    }
+    nav.scrolled {
+      background: rgba(26,18,11,0.75);
+      backdrop-filter: blur(18px) saturate(1.5);
+      -webkit-backdrop-filter: blur(18px) saturate(1.5);
+      border-bottom: 1px solid rgba(243,156,18,0.12);
+      padding: 1rem 3rem;
+    }
+    .nav-brand {
+      display: flex; align-items: center; gap: 0.7rem;
+      text-decoration: none;
+    }
+    .nav-owl {
+      font-size: 1.7rem; line-height: 1;
+    }
+    .nav-brand-text {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.15rem; font-weight: 700;
+      color: var(--cream); letter-spacing: 0.01em;
+    }
+    .nav-brand-text span { color: var(--orange); }
+    .nav-links {
+      display: flex; gap: 2.2rem; list-style: none;
+    }
+    .nav-links a {
+      font-size: 0.88rem; font-weight: 500; letter-spacing: 0.06em;
+      text-transform: uppercase; color: rgba(255,253,250,0.75);
+      text-decoration: none; transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--orange); }
+    .nav-cta {
+      background: var(--orange); color: var(--obsidian) !important;
+      padding: 0.55rem 1.4rem; border-radius: 2rem;
+      font-weight: 600 !important; color: var(--obsidian) !important;
+      transition: background 0.2s, transform 0.2s !important;
+    }
+    .nav-cta:hover { background: var(--orange-light) !important; transform: translateY(-1px); }
+
+    /* ─── HERO ─── */
+    #hero {
+      position: relative; min-height: 100vh;
+      display: flex; align-items: flex-end;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute; inset: 0;
+      background-image: url('https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=1600&q=80');
+      background-size: cover; background-position: center;
+      filter: brightness(0.45) saturate(1.2);
+      transition: transform 0.1s ease-out;
+    }
+    /* Gradient overlay */
+    .hero-bg::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, var(--obsidian) 0%, rgba(26,18,11,0.55) 45%, transparent 100%);
+    }
+    .hero-content {
+      position: relative; z-index: 2;
+      padding: 0 5vw 8vh;
+      max-width: 820px;
+    }
+    .hero-eyebrow {
+      font-size: 0.8rem; font-weight: 600; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--orange);
+      margin-bottom: 1.2rem;
+      display: flex; align-items: center; gap: 0.8rem;
+    }
+    .hero-eyebrow::before {
+      content: ''; display: block;
+      width: 2.5rem; height: 1.5px; background: var(--orange);
+    }
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(3.2rem, 8vw, 6.5rem);
+      font-weight: 900; line-height: 1.02;
+      color: var(--cream); margin-bottom: 1.5rem;
+    }
+    .hero-title em { font-style: italic; color: var(--orange); }
+    .hero-sub {
+      font-size: 1.1rem; font-weight: 300;
+      color: rgba(255,253,250,0.7); max-width: 480px;
+      line-height: 1.7; margin-bottom: 2.8rem;
+    }
+    .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: var(--orange); color: var(--obsidian);
+      padding: 0.9rem 2.2rem; border-radius: 3rem;
+      font-weight: 600; font-size: 0.95rem;
+      text-decoration: none; transition: all 0.25s;
+      box-shadow: 0 8px 32px rgba(243,156,18,0.35);
+    }
+    .btn-primary:hover { background: var(--orange-light); transform: translateY(-2px); box-shadow: 0 12px 40px rgba(243,156,18,0.45); }
+    .btn-outline {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: transparent; color: var(--cream);
+      padding: 0.9rem 2.2rem; border-radius: 3rem;
+      font-weight: 500; font-size: 0.95rem;
+      border: 1.5px solid rgba(255,253,250,0.3);
+      text-decoration: none; transition: all 0.25s;
+    }
+    .btn-outline:hover { border-color: var(--orange); color: var(--orange); }
+
+    /* Floating badge */
+    .hero-badge {
+      position: absolute; right: 6vw; top: 50%;
+      transform: translateY(-50%);
+      z-index: 2;
+      background: rgba(26,18,11,0.7);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(243,156,18,0.25);
+      border-radius: 2rem; padding: 1.8rem;
+      text-align: center; min-width: 160px;
+      animation: float 4s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(-50%) translateY(0); }
+      50% { transform: translateY(-50%) translateY(-10px); }
+    }
+    .hero-badge .badge-owl { font-size: 2.8rem; }
+    .hero-badge .badge-since { font-size: 0.7rem; letter-spacing: 0.15em; color: var(--orange); text-transform: uppercase; margin-top: 0.4rem; }
+    .hero-badge .badge-year { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 900; color: var(--cream); line-height: 1; }
+
+    /* Scroll hint */
+    .scroll-hint {
+      position: absolute; bottom: 2.5rem; right: 50%;
+      transform: translateX(50%);
+      z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 0.4rem;
+    }
+    .scroll-hint span { font-size: 0.65rem; letter-spacing: 0.2em; color: rgba(255,253,250,0.4); text-transform: uppercase; }
+    .scroll-line {
+      width: 1px; height: 3rem;
+      background: linear-gradient(to bottom, rgba(255,253,250,0.3), transparent);
+      animation: scrollAnim 1.8s ease-in-out infinite;
+    }
+    @keyframes scrollAnim {
+      0% { transform: scaleY(0); transform-origin: top; }
+      50% { transform: scaleY(1); transform-origin: top; }
+      51% { transform: scaleY(1); transform-origin: bottom; }
+      100% { transform: scaleY(0); transform-origin: bottom; }
+    }
+
+    /* ─── SECTION BASICS ─── */
+    section { padding: 7rem 5vw; }
+    .section-label {
+      font-size: 0.72rem; font-weight: 600; letter-spacing: 0.22em;
+      text-transform: uppercase; color: var(--orange);
+      display: flex; align-items: center; gap: 0.7rem;
+      margin-bottom: 1rem;
+    }
+    .section-label::before {
+      content: ''; width: 2rem; height: 1.5px; background: var(--orange);
+    }
+    h2.section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      font-weight: 800; line-height: 1.1;
+      color: var(--brown); margin-bottom: 1.2rem;
+    }
+    .section-body {
+      font-size: 1rem; line-height: 1.8; color: var(--brown-mid);
+      max-width: 560px;
+    }
+
+    /* ─── ABOUT ─── */
+    #about {
+      background: var(--obsidian);
+      display: grid; grid-template-columns: 1fr 1fr; gap: 6rem; align-items: center;
+    }
+    #about .section-label { color: var(--orange); }
+    #about h2.section-title { color: var(--cream); }
+    #about .section-body { color: var(--text-light); }
+    .about-img-wrap {
+      position: relative;
+      border-radius: var(--radius); overflow: hidden;
+    }
+    .about-img-wrap img {
+      width: 100%; aspect-ratio: 4/5; object-fit: cover;
+      border-radius: var(--radius); display: block;
+    }
+    .about-img-wrap::before {
+      content: '';
+      position: absolute; inset: -1px;
+      border-radius: calc(var(--radius) + 1px);
+      background: linear-gradient(135deg, var(--orange) 0%, transparent 40%, transparent 60%, var(--brown-mid) 100%);
+      z-index: -1;
+    }
+    .about-stats {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 3rem;
+    }
+    .stat-card {
+      background: rgba(255,253,250,0.04);
+      border: 1px solid rgba(255,253,250,0.08);
+      border-radius: var(--radius-sm); padding: 1.5rem;
+    }
+    .stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.2rem; font-weight: 900; color: var(--orange);
+    }
+    .stat-label { font-size: 0.82rem; color: var(--text-light); margin-top: 0.2rem; }
+    .about-quote {
+      margin-top: 2rem; padding: 1.5rem;
+      border-left: 3px solid var(--orange);
+      background: rgba(243,156,18,0.06);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    }
+    .about-quote p { font-style: italic; font-size: 1.05rem; color: var(--text-light); line-height: 1.7; }
+    .about-quote cite { display: block; margin-top: 0.7rem; font-size: 0.8rem; color: var(--orange); font-style: normal; letter-spacing: 0.1em; }
+
+    /* ─── SPACES ─── */
+    #spaces { background: var(--cream-warm); }
+    .spaces-header {
+      display: flex; justify-content: space-between; align-items: flex-end;
+      margin-bottom: 3.5rem; flex-wrap: wrap; gap: 1.5rem;
+    }
+    .spaces-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.8rem;
+    }
+    .space-card {
+      border-radius: var(--radius); overflow: hidden;
+      position: relative; cursor: pointer;
+      transition: transform 0.35s cubic-bezier(.22,.68,0,1.2), box-shadow 0.35s ease;
+      background: var(--obsidian);
+    }
+    .space-card:hover {
+      transform: translateY(-8px) scale(1.012);
+      box-shadow: 0 28px 60px rgba(62,39,35,0.22);
+    }
+    .space-card-img {
+      aspect-ratio: 3/4; width: 100%;
+      object-fit: cover; display: block;
+      filter: brightness(0.55) saturate(1.1);
+      transition: filter 0.4s ease, transform 0.6s ease;
+    }
+    .space-card:hover .space-card-img {
+      filter: brightness(0.65) saturate(1.3);
+      transform: scale(1.04);
+    }
+    .space-card-body {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      padding: 2rem 1.8rem;
+      background: linear-gradient(to top, rgba(26,18,11,0.96) 0%, transparent 100%);
+    }
+    .space-floor {
+      font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--orange); margin-bottom: 0.4rem;
+    }
+    .space-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem; font-weight: 700; color: var(--cream); line-height: 1.1;
+      margin-bottom: 0.7rem;
+    }
+    .space-desc { font-size: 0.85rem; color: rgba(255,253,250,0.6); line-height: 1.6; }
+    .space-tag {
+      display: inline-block; margin-top: 1rem;
+      background: rgba(243,156,18,0.15); border: 1px solid rgba(243,156,18,0.3);
+      color: var(--orange); font-size: 0.72rem; letter-spacing: 0.1em;
+      padding: 0.35rem 0.9rem; border-radius: 2rem; text-transform: uppercase;
+    }
+    .space-hours { font-size: 0.8rem; color: rgba(255,253,250,0.45); margin-top: 0.5rem; }
+
+    /* ─── MENU ─── */
+    #menu { background: var(--obsidian); }
+    .menu-header { margin-bottom: 3.5rem; }
+    .menu-tabs {
+      display: flex; gap: 0.8rem; margin-top: 2rem; flex-wrap: wrap;
+    }
+    .menu-tab {
+      padding: 0.55rem 1.5rem; border-radius: 2rem; font-size: 0.85rem;
+      font-weight: 500; cursor: pointer; border: 1.5px solid rgba(255,253,250,0.12);
+      color: rgba(255,253,250,0.5); background: transparent;
+      transition: all 0.25s; font-family: 'Outfit', sans-serif;
+    }
+    .menu-tab.active, .menu-tab:hover {
+      background: var(--orange); color: var(--obsidian);
+      border-color: var(--orange); font-weight: 600;
+    }
+    .menu-panel { display: none; }
+    .menu-panel.active { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; animation: fadeIn 0.4s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    .dish-card {
+      background: rgba(255,253,250,0.04); border: 1px solid rgba(255,253,250,0.08);
+      border-radius: 1.6rem; padding: 1.6rem; transition: all 0.3s;
+    }
+    .dish-card:hover { background: rgba(255,253,250,0.07); border-color: rgba(243,156,18,0.2); }
+    .dish-card.featured { border-color: rgba(243,156,18,0.35); background: rgba(243,156,18,0.05); }
+    .dish-badge {
+      display: inline-block; font-size: 0.65rem; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--orange);
+      background: rgba(243,156,18,0.12); border-radius: 1rem;
+      padding: 0.25rem 0.7rem; margin-bottom: 1rem;
+    }
+    .dish-emoji { font-size: 2rem; margin-bottom: 0.7rem; }
+    .dish-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem; font-weight: 700;
+      color: var(--cream); margin-bottom: 0.5rem;
+    }
+    .dish-desc { font-size: 0.84rem; color: var(--text-light); line-height: 1.6; }
+    .dish-note {
+      margin-top: 0.8rem; font-size: 0.78rem;
+      color: rgba(243,156,18,0.7); font-style: italic;
+    }
+
+    .slow-food-banner {
+      margin-top: 3rem; padding: 1.8rem 2.5rem;
+      background: rgba(243,156,18,0.08); border: 1px solid rgba(243,156,18,0.2);
+      border-radius: var(--radius-sm);
+      display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;
+    }
+    .slow-food-banner .icon { font-size: 2rem; }
+    .slow-food-banner strong { font-family: 'Playfair Display', serif; color: var(--orange); font-size: 1.05rem; display: block; }
+    .slow-food-banner p { font-size: 0.88rem; color: var(--text-light); line-height: 1.5; }
+
+    /* ─── EXPERIENCE STRIP ─── */
+    #experience {
+      background: var(--orange);
+      padding: 5rem 5vw;
+    }
+    .experience-inner {
+      display: flex; gap: 4rem; align-items: center; flex-wrap: wrap;
+    }
+    .exp-text { flex: 1; min-width: 280px; }
+    .exp-text h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 4vw, 3rem); font-weight: 900;
+      color: var(--obsidian); line-height: 1.1; margin-bottom: 1rem;
+    }
+    .exp-text p { font-size: 1rem; color: rgba(26,18,11,0.7); line-height: 1.7; max-width: 440px; }
+    .exp-pills {
+      display: flex; flex-wrap: wrap; gap: 0.7rem; margin-top: 1.8rem;
+    }
+    .pill {
+      background: rgba(26,18,11,0.12); color: var(--obsidian);
+      padding: 0.5rem 1.2rem; border-radius: 2rem; font-size: 0.84rem; font-weight: 500;
+    }
+    .exp-features {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; flex: 1; min-width: 280px;
+    }
+    .exp-feat {
+      background: rgba(26,18,11,0.1); border-radius: 1.2rem;
+      padding: 1.4rem;
+    }
+    .exp-feat .ef-icon { font-size: 1.8rem; margin-bottom: 0.5rem; }
+    .exp-feat .ef-title { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1rem; color: var(--obsidian); }
+    .exp-feat .ef-sub { font-size: 0.8rem; color: rgba(26,18,11,0.6); margin-top: 0.2rem; }
+
+    /* ─── GALLERY STRIP ─── */
+    #gallery {
+      padding: 5rem 0; overflow: hidden;
+      background: var(--cream-warm);
+    }
+    .gallery-header { padding: 0 5vw; margin-bottom: 2.5rem; }
+    .gallery-scroll {
+      display: flex; gap: 1.2rem;
+      overflow-x: auto; padding: 0.5rem 5vw 1.5rem;
+      scrollbar-width: none;
+    }
+    .gallery-scroll::-webkit-scrollbar { display: none; }
+    .gallery-scroll img {
+      height: 280px; width: auto; min-width: 220px;
+      border-radius: 1.5rem; object-fit: cover;
+      flex-shrink: 0; filter: brightness(0.88) saturate(1.1);
+      transition: filter 0.3s, transform 0.3s;
+    }
+    .gallery-scroll img:hover { filter: brightness(1) saturate(1.2); transform: scale(1.02); }
+
+    /* ─── CONTACT ─── */
+    #contact {
+      background: var(--obsidian);
+      display: grid; grid-template-columns: 1fr 1fr; gap: 6rem; align-items: start;
+    }
+    #contact h2.section-title { color: var(--cream); }
+    #contact .section-body { color: var(--text-light); }
+    .contact-cards { margin-top: 2.5rem; display: flex; flex-direction: column; gap: 1.2rem; }
+    .contact-card {
+      display: flex; align-items: flex-start; gap: 1.2rem;
+      background: rgba(255,253,250,0.04); border: 1px solid rgba(255,253,250,0.08);
+      border-radius: 1.2rem; padding: 1.4rem;
+      transition: border-color 0.3s;
+    }
+    .contact-card:hover { border-color: rgba(243,156,18,0.25); }
+    .cc-icon { font-size: 1.5rem; }
+    .cc-label { font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--orange); margin-bottom: 0.3rem; }
+    .cc-val { font-size: 0.95rem; color: var(--cream); font-weight: 400; }
+    .cc-sub { font-size: 0.8rem; color: var(--text-light); margin-top: 0.15rem; }
+    .map-wrap {
+      border-radius: var(--radius); overflow: hidden;
+      border: 1px solid rgba(255,253,250,0.08);
+      height: 420px;
+    }
+    .map-wrap iframe { width: 100%; height: 100%; border: none; filter: grayscale(0.3) invert(0.92) hue-rotate(180deg); }
+    .social-row { display: flex; gap: 1rem; margin-top: 2rem; }
+    .social-btn {
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      padding: 0.7rem 1.5rem; border-radius: 2rem;
+      border: 1.5px solid rgba(255,253,250,0.15);
+      color: rgba(255,253,250,0.7); font-size: 0.85rem;
+      text-decoration: none; transition: all 0.25s;
+    }
+    .social-btn:hover { border-color: var(--orange); color: var(--orange); }
+
+    /* ─── FOOTER ─── */
+    footer {
+      background: #0f0a06; padding: 3rem 5vw;
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem;
+      border-top: 1px solid rgba(255,253,250,0.06);
+    }
+    .footer-brand {
+      font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--cream);
+    }
+    .footer-brand span { color: var(--orange); }
+    .footer-copy { font-size: 0.78rem; color: rgba(255,253,250,0.3); }
+    .footer-tagline { font-size: 0.8rem; color: rgba(255,253,250,0.25); font-style: italic; }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 1024px) {
+      .spaces-grid { grid-template-columns: 1fr 1fr; }
+      .hero-badge { display: none; }
+    }
+    @media (max-width: 768px) {
+      nav { padding: 1.2rem 1.5rem; }
+      nav.scrolled { padding: 0.9rem 1.5rem; }
+      .nav-links { display: none; }
+      section { padding: 5rem 5vw; }
+      .spaces-grid { grid-template-columns: 1fr; }
+      #about { grid-template-columns: 1fr; gap: 3rem; }
+      #contact { grid-template-columns: 1fr; gap: 3rem; }
+      .exp-features { grid-template-columns: 1fr 1fr; }
+      .hero-content { padding: 0 5vw 6vh; }
+    }
+    @media (max-width: 480px) {
+      .exp-features { grid-template-columns: 1fr; }
+      .about-stats { grid-template-columns: 1fr 1fr; }
+    }
+
+    /* ─── REVEAL ANIMATIONS ─── */
+    .reveal {
+      opacity: 0; transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+
+    /* Grain overlay */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 999;
+      pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+      opacity: 0.025;
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a class="nav-brand" href="#hero">
+    <span class="nav-owl">🦉</span>
+    <span class="nav-brand-text">Wise <span>Owl</span></span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#about">Our Story</a></li>
+    <li><a href="#spaces">Spaces</a></li>
+    <li><a href="#menu">Menu</a></li>
+    <li><a href="#contact" class="nav-cta">Find Us</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg" id="heroBg"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow reveal">South Kolkata's Favourite Adda</div>
+    <h1 class="hero-title reveal reveal-delay-1">
+      Where <em>stories</em><br>find their flavour
+    </h1>
+    <p class="hero-sub reveal reveal-delay-2">
+      Fairy lights, fresh steaks & the warmth of old Kolkata. Three floors, one soul — since 2012.
+    </p>
+    <div class="hero-actions reveal reveal-delay-3">
+      <a href="#spaces" class="btn-primary">🦉 Explore Our Spaces</a>
+      <a href="#menu" class="btn-outline">View Menu →</a>
+    </div>
+  </div>
+  <div class="hero-badge">
+    <div class="badge-owl">🦉</div>
+    <div class="badge-since">Since</div>
+    <div class="badge-year">2012</div>
+  </div>
+  <div class="scroll-hint">
+    <div class="scroll-line"></div>
+    <span>Scroll</span>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="reveal">
+    <div class="section-label">Our Story</div>
+    <h2 class="section-title">A corner of Kolkata that never hurries</h2>
+    <p class="section-body">
+      Tucked behind Golpark on Purna Das Road, Wise Owl began as a dream — a place where morning joggers, daydreaming students and evening couples could all feel at home. Over a decade later, that dream still flickers under a canopy of fairy lights.
+    </p>
+    <div class="about-stats">
+      <div class="stat-card">
+        <div class="stat-num">12+</div>
+        <div class="stat-label">Years of stories</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">3</div>
+        <div class="stat-label">Unique dining spaces</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">7:30</div>
+        <div class="stat-label">AM — we open early</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">∞</div>
+        <div class="stat-label">Adda possibilities</div>
+      </div>
+    </div>
+    <div class="about-quote">
+      <p>"The best table in Kolkata isn't inside a grand hotel — it's under the fairy lights at Wise Owl."</p>
+      <cite>— A regular since 2014</cite>
+    </div>
+  </div>
+  <div class="about-img-wrap reveal reveal-delay-2">
+    <img src="https://images.unsplash.com/photo-1600093463592-8e36ae95ef56?w=800&q=80" alt="Wise Owl ambience" />
+  </div>
+</section>
+
+<!-- SPACES -->
+<section id="spaces">
+  <div class="spaces-header">
+    <div>
+      <div class="section-label reveal">Three Floors, One Soul</div>
+      <h2 class="section-title reveal">Choose your<br>perfect spot</h2>
+    </div>
+    <p class="section-body reveal" style="max-width:320px; text-align:right">
+      Each level of Wise Owl holds its own mood and magic.
+    </p>
+  </div>
+  <div class="spaces-grid">
+
+    <div class="space-card reveal">
+      <img class="space-card-img" src="https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=600&q=80" alt="The Coffee Shop" />
+      <div class="space-card-body">
+        <div class="space-floor">Ground Floor</div>
+        <div class="space-name">The Coffee Shop</div>
+        <div class="space-desc">Open-air energy, vibrant chatter, and the best breakfast in South Kolkata. Where your morning truly begins.</div>
+        <span class="space-tag">☕ Breakfast & Brews</span>
+        <div class="space-hours">⏰ 7:30 AM – 11:00 PM</div>
+      </div>
+    </div>
+
+    <div class="space-card reveal reveal-delay-1">
+      <img class="space-card-img" src="https://images.unsplash.com/photo-1544025162-d76694265947?w=600&q=80" alt="The Steakhouse" />
+      <div class="space-card-body">
+        <div class="space-floor">Rooftop</div>
+        <div class="space-name">The Steakhouse</div>
+        <div class="space-desc">Dimly lit and romantically quiet. Continental cuisine under the open sky — made for lingering dinners and soft conversation.</div>
+        <span class="space-tag">🥩 Steaks & Continental</span>
+        <div class="space-hours">⏰ Lunch & Dinner</div>
+      </div>
+    </div>
+
+    <div class="space-card reveal reveal-delay-2">
+      <img class="space-card-img" src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&q=80" alt="Charcoal" />
+      <div class="space-card-body">
+        <div class="space-floor">The Grill</div>
+        <div class="space-name">Charcoal</div>
+        <div class="space-desc">The aroma of live coals and traditional spices. Indian grills and kebabs crafted the old-fashioned way — slow, aromatic, and soul-warming.</div>
+        <span class="space-tag">🔥 Grills & Kebabs</span>
+        <div class="space-hours">⏰ Evenings onwards</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- MENU -->
+<section id="menu">
+  <div class="menu-header">
+    <div class="section-label reveal" style="color:var(--orange)">What We Cook</div>
+    <h2 class="section-title reveal" style="color:var(--cream)">Signature<br>Creations</h2>
+    <div class="menu-tabs reveal">
+      <button class="menu-tab active" onclick="switchTab('breakfast')">Breakfast</button>
+      <button class="menu-tab" onclick="switchTab('mains')">Mains</button>
+      <button class="menu-tab" onclick="switchTab('grill')">Grill & Kebabs</button>
+      <button class="menu-tab" onclick="switchTab('beverages')">Beverages</button>
+    </div>
+  </div>
+
+  <div class="menu-panel active" id="tab-breakfast">
+    <div class="dish-card featured">
+      <div class="dish-badge">⭐ Signature</div>
+      <div class="dish-emoji">🍳</div>
+      <div class="dish-name">Joey's Platter</div>
+      <div class="dish-desc">The quintessential Wise Owl breakfast. Eggs your way, crispy bacon, grilled sausages, sautéed mushrooms and golden toast. A full morning in a single plate.</div>
+    </div>
+    <div class="dish-card">
+      <div class="dish-emoji">🥚</div>
+      <div class="dish-name">Eggs Benedictine</div>
+      <div class="dish-desc">Poached eggs on toasted muffins with velvety hollandaise — a weekend ritual for regulars.</div>
+    </div>
+    <div class="dish-card">
+      <div class="dish-emoji">🥞</div>
+      <div class="dish-name">Fluffy Pancake Stack</div>
+      <div class="dish-desc">Thick buttermilk pancakes with maple, fresh berries and whipped cream. Morning indulgence, redefined.</div>
+    </div>
+    <div class="dish-card">
+      <div class="dish-emoji">🫙</div>
+      <div class="dish-name">Overnight Oats & Granola</div>
+      <div class="dish-desc">For the health-conscious early bird. Cold-soaked oats with seasonal fruits and house granola.</div>
+    </div>
+  </div>
+
+  <div class="menu-panel" id="tab-mains">
+    <div class="dish-card featured">
+      <div class="dish-badge">⭐ Chef's Pride</div>
+      <div class="dish-emoji">🥩</div>
+      <div class="dish-name">Chicken Rosemary Steak</div>
+      <div class="dish-desc">A tender chicken breast, marinated in fresh rosemary and garlic, pan-seared to perfection. The dish that made Wise Owl's rooftop legendary.</div>
+      <div class="dish-note">⏳ Made fresh — allow 35–45 min</div>
+    </div>
+    <div class="dish-card featured">
+      <div class="dish-badge">⭐ Local Favourite</div>
+      <div class="dish-emoji">🐟</div>
+      <div class="dish-name">Grilled Bhetki</div>
+      <div class="dish-desc">Fresh Bhetki fillet grilled whole and served with a bright lemon butter sauce. A Kolkata original with continental elegance.</div>
+      <div class="dish-note">⏳ Made fresh — allow 30–40 min</div>
+    </div>
+    <div class="dish-card">
+      <div class="dish-emoji">🍝</div>
+      <div class="dish-name">Spaghetti Aglio e Olio</div>
+      <div class="dish-desc">House-made pasta tossed with golden garlic, chilli flakes, parsley and premium olive oil. Simple, perfect.</div>
+    </div>
+    <div class="dish-card">
+      <div class="dish-emoji">🫕</div>
+      <div class="dish-name">Continental Chicken Stew</div>
+      <div class="dish-desc">Slow-simmered vegetables and chicken in a rich herb broth. The dish that feels like a hug.</div>
+    </div>
+  </div>
+
+  <div class="menu-panel" id="tab-grill">
+    <div class="dish-card">
+      <div class="dish-emoji">🔥</div>
+      <div class="dish-name">Seekh Kebab</div>
+      <div class="dish-desc">Hand-minced chicken mixed with caramelized onions and aromatic spices, threaded and charcoal-grilled. Served with mint chutney.</div>
+    </div>
+    <div class="dish-card">
+      <div class="dish-emoji">🍗</div>
+      <div class="dish-name">Tandoori Half Chicken</div>
+      <div class="dish-desc">Overnight marinated chicken, charred and smoky, arriving at the table still sizzling. A Charcoal classic.</div>
+    </div>
+    <div class="dish-card">
+      <div class="dish-emoji">🫑</div>
+      <div class="dish-name">Paneer Tikka</div>
+      <div class="dish-desc">Thick paneer cubes in spiced yoghurt marinade, grilled in the charcoal oven until blistered and golden.</div>
+    </div>
+    <div class="dish-card">
+      <div class="dish-emoji">🥙</div>
+      <div class="dish-name">Mutton Galouti</div>
+      <div class="dish-desc">The softest kebab you'll ever have. Fine-ground mutton with 30+ spices, melting on a warm roomali roti.</div>
+    </div>
+  </div>
+
+  <div class="menu-panel" id="tab-beverages">
+    <div class="dish-card featured">
+      <div class="dish-badge">⭐ House Special</div>
+      <div class="dish-emoji">☕</div>
+      <div class="dish-name">Special Cappuccino</div>
+      <div class="dish-desc">Our signature cappuccino — a double shot of medium-roast espresso, velvety microfoam and a dusting of dark cocoa. The reason mornings exist.</div>
+    </div>
+    <div class="dish-card">
+      <div class="dish-emoji">🫖</div>
+      <div class="dish-name">Cold Brew Single Origin</div>
+      <div class="dish-desc">12-hour cold-steeped single-origin coffee. Smooth, bold and ice cold — perfect for Kolkata afternoons.</div>
+    </div>
+    <div class="dish-card">
+      <div class="dish-emoji">🧋</div>
+      <div class="dish-name">Belgian Hot Chocolate</div>
+      <div class="dish-desc">Thick, rich, and intensely chocolatey. Made with real Belgian couverture. Not for the faint-hearted.</div>
+    </div>
+    <div class="dish-card">
+      <div class="dish-emoji">🍹</div>
+      <div class="dish-name">Fresh Lemonade & Mocktails</div>
+      <div class="dish-desc">House-squeezed lemonades, fresh fruit mocktails, and seasonal coolers — rotating with the weather.</div>
+    </div>
+  </div>
+
+  <div class="slow-food-banner reveal">
+    <div class="icon">🐢</div>
+    <div>
+      <strong>Our Slow Food Promise</strong>
+      <p>We believe great food cannot be rushed. Our main courses are cooked fresh to order — please allow 30–45 minutes. We promise it's worth every moment of waiting.</p>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE STRIP -->
+<section id="experience">
+  <div class="experience-inner">
+    <div class="exp-text">
+      <h2>More than a meal — it's an <em>adda</em></h2>
+      <p>From the early morning jogger grabbing Joey's Platter, to the student who treats the Coffee Shop as a second home, to the couple celebrating quietly on the rooftop — Wise Owl belongs to everyone.</p>
+      <div class="exp-pills">
+        <span class="pill">🌅 Earlybird Friendly</span>
+        <span class="pill">💻 Freelancer Approved</span>
+        <span class="pill">💑 Date Night Worthy</span>
+        <span class="pill">👨‍👩‍👧 Family Tables</span>
+      </div>
+    </div>
+    <div class="exp-features">
+      <div class="exp-feat">
+        <div class="ef-icon">🧚</div>
+        <div class="ef-title">Fairy Lights</div>
+        <div class="ef-sub">Magical outdoor canopy every evening</div>
+      </div>
+      <div class="exp-feat">
+        <div class="ef-icon">🦉</div>
+        <div class="ef-title">Owl Décor</div>
+        <div class="ef-sub">Whimsical and warm throughout</div>
+      </div>
+      <div class="exp-feat">
+        <div class="ef-icon">🌿</div>
+        <div class="ef-title">Greenery</div>
+        <div class="ef-sub">Lush plants framing every seat</div>
+      </div>
+      <div class="exp-feat">
+        <div class="ef-icon">🎶</div>
+        <div class="ef-title">Ambient Music</div>
+        <div class="ef-sub">Curated to match every mood</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GALLERY -->
+<section id="gallery">
+  <div class="gallery-header">
+    <div class="section-label">The Atmosphere</div>
+    <h2 class="section-title">See it for yourself</h2>
+  </div>
+  <div class="gallery-scroll">
+    <img src="https://images.unsplash.com/photo-1445116572660-236099ec97a0?w=400&q=80" alt="Cafe ambience" />
+    <img src="https://images.unsplash.com/photo-1493857671505-72967e2e2760?w=400&q=80" alt="Coffee" />
+    <img src="https://images.unsplash.com/photo-1544025162-d76694265947?w=400&q=80" alt="Steak" />
+    <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=400&q=80" alt="Grill" />
+    <img src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=400&q=80" alt="Coffee cup" />
+    <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=400&q=80" alt="Fine dining" />
+    <img src="https://images.unsplash.com/photo-1559339352-11d035aa65de?w=400&q=80" alt="Outdoor seating" />
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div>
+    <div class="section-label reveal" style="color:var(--orange)">Find Us</div>
+    <h2 class="section-title reveal" style="color:var(--cream)">Come say<br>hello 🦉</h2>
+    <p class="section-body reveal" style="color:var(--text-light)">
+      We're waiting for you on Purna Das Road, just a short walk from Golpark. Drop in any time — we're almost always here.
+    </p>
+    <div class="contact-cards reveal reveal-delay-1">
+      <div class="contact-card">
+        <div class="cc-icon">📍</div>
+        <div>
+          <div class="cc-label">Address</div>
+          <div class="cc-val">66/2 B, Purna Das Road</div>
+          <div class="cc-sub">Near Golpark, Kolkata 700029</div>
+        </div>
+      </div>
+      <div class="contact-card">
+        <div class="cc-icon">📞</div>
+        <div>
+          <div class="cc-label">Phone</div>
+          <div class="cc-val">+91 70443 50606</div>
+          <div class="cc-sub">Call ahead for rooftop reservations</div>
+        </div>
+      </div>
+      <div class="contact-card">
+        <div class="cc-icon">🕐</div>
+        <div>
+          <div class="cc-label">Hours</div>
+          <div class="cc-val">7:30 AM – 11:00 PM</div>
+          <div class="cc-sub">Open all days including weekends</div>
+        </div>
+      </div>
+    </div>
+    <div class="social-row reveal reveal-delay-2">
+      <a href="https://www.facebook.com" target="_blank" class="social-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
+        Facebook
+      </a>
+      <a href="https://www.instagram.com" target="_blank" class="social-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+        Instagram
+      </a>
+    </div>
+  </div>
+  <div class="map-wrap reveal reveal-delay-1">
+    <iframe
+      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3685.4!2d88.3697!3d22.5126!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a0276b7eb1bff0f%3A0x8b8e97b73cd4b2b5!2sWise+Owl+The+Coffee+Shop!5e0!3m2!1sen!2sin!4v1"
+      allowfullscreen loading="lazy"
+      referrerpolicy="no-referrer-when-downgrade">
+    </iframe>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div>
+    <div class="footer-brand">🦉 Wise <span>Owl</span></div>
+    <div class="footer-tagline">The Coffee Shop · The Steakhouse · Charcoal</div>
+  </div>
+  <div class="footer-copy">
+    66/2 B Purna Das Road, Kolkata 700029 · © 2025 Wise Owl. All rights reserved.
+  </div>
+</footer>
+
+<script>
+  // Sticky nav
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 60);
+  });
+
+  // Parallax hero bg
+  const heroBg = document.getElementById('heroBg');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY < window.innerHeight) {
+      heroBg.style.transform = `translateY(${window.scrollY * 0.3}px)`;
+    }
+  });
+
+  // Reveal on scroll
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.12 });
+  reveals.forEach(el => observer.observe(el));
+
+  // Menu tabs
+  function switchTab(id) {
+    document.querySelectorAll('.menu-tab').forEach((t, i) => {
+      const ids = ['breakfast','mains','grill','beverages'];
+      t.classList.toggle('active', ids[i] === id);
+    });
+    document.querySelectorAll('.menu-panel').forEach(p => {
+      p.classList.toggle('active', p.id === 'tab-' + id);
+    });
+  }
+
+  // Trigger initial reveal for hero
+  document.querySelectorAll('#hero .reveal').forEach((el, i) => {
+    setTimeout(() => el.classList.add('visible'), 200 + i * 150);
+  });
+</script>
+</body>
+</html>
