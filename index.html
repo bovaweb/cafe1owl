@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+\<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -328,17 +328,22 @@
     @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
     .dish-card {
       background: rgba(255,253,250,0.04); border: 1px solid rgba(255,253,250,0.08);
-      border-radius: 1.6rem; padding: 1.6rem; transition: all 0.3s;
+      border-radius: 1.6rem; overflow: hidden; transition: all 0.3s;
     }
     .dish-card:hover { background: rgba(255,253,250,0.07); border-color: rgba(243,156,18,0.2); }
     .dish-card.featured { border-color: rgba(243,156,18,0.35); background: rgba(243,156,18,0.05); }
+    .dish-img {
+      width: 100%; height: 180px; object-fit: cover; display: block;
+      transition: transform 0.5s ease;
+    }
+    .dish-card:hover .dish-img { transform: scale(1.05); }
+    .dish-card-body { padding: 1.4rem 1.4rem 1.6rem; }
     .dish-badge {
       display: inline-block; font-size: 0.65rem; letter-spacing: 0.12em;
       text-transform: uppercase; color: var(--orange);
       background: rgba(243,156,18,0.12); border-radius: 1rem;
-      padding: 0.25rem 0.7rem; margin-bottom: 1rem;
+      padding: 0.25rem 0.7rem; margin-bottom: 0.8rem;
     }
-    .dish-emoji { font-size: 2rem; margin-bottom: 0.7rem; }
     .dish-name {
       font-family: 'Playfair Display', serif;
       font-size: 1.2rem; font-weight: 700;
@@ -447,6 +452,43 @@
       text-decoration: none; transition: all 0.25s;
     }
     .social-btn:hover { border-color: var(--orange); color: var(--orange); }
+    .social-btn-wa:hover { border-color: #25d366; color: #25d366; }
+
+    /* ─── CONTACT FORM ─── */
+    .contact-form-wrap {
+      margin-top: 2.8rem;
+    }
+    .contact-form-wrap h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem; color: var(--cream); margin-bottom: 0.4rem;
+    }
+    .contact-form-wrap p { font-size: 0.85rem; color: var(--text-light); margin-bottom: 1.5rem; }
+    .cform { display: flex; flex-direction: column; gap: 1rem; }
+    .cform label { display: none; }
+    .cform input, .cform textarea {
+      width: 100%;
+      background: rgba(255,253,250,0.05);
+      border: 1.5px solid rgba(255,253,250,0.1);
+      border-radius: 0.9rem; padding: 0.9rem 1.2rem;
+      font-family: 'Outfit', sans-serif; font-size: 0.92rem;
+      color: var(--cream); outline: none;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .cform input::placeholder, .cform textarea::placeholder { color: rgba(200,184,154,0.45); }
+    .cform input:focus, .cform textarea:focus {
+      border-color: var(--orange);
+      background: rgba(243,156,18,0.05);
+    }
+    .cform textarea { resize: vertical; min-height: 110px; }
+    .cform-btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+      background: var(--orange); color: var(--obsidian);
+      border: none; border-radius: 3rem; padding: 0.9rem 2rem;
+      font-family: 'Outfit', sans-serif; font-size: 0.95rem; font-weight: 600;
+      cursor: pointer; transition: all 0.25s;
+      box-shadow: 0 6px 24px rgba(243,156,18,0.3);
+    }
+    .cform-btn:hover { background: var(--orange-light); transform: translateY(-2px); }
 
     /* ─── FOOTER ─── */
     footer {
@@ -645,99 +687,131 @@
 
   <div class="menu-panel active" id="tab-breakfast">
     <div class="dish-card featured">
-      <div class="dish-badge">⭐ Signature</div>
-      <div class="dish-emoji">🍳</div>
-      <div class="dish-name">Joey's Platter</div>
-      <div class="dish-desc">The quintessential Wise Owl breakfast. Eggs your way, crispy bacon, grilled sausages, sautéed mushrooms and golden toast. A full morning in a single plate.</div>
+      <img class="dish-img" src="https://images.unsplash.com/photo-1525351484163-7529414344d8?w=600&q=80" alt="Joey's Platter" />
+      <div class="dish-card-body">
+        <div class="dish-badge">⭐ Signature</div>
+        <div class="dish-name">Joey's Platter</div>
+        <div class="dish-desc">The quintessential Wise Owl breakfast. Eggs your way, crispy bacon, grilled sausages, sautéed mushrooms and golden toast. A full morning in a single plate.</div>
+      </div>
     </div>
     <div class="dish-card">
-      <div class="dish-emoji">🥚</div>
-      <div class="dish-name">Eggs Benedictine</div>
-      <div class="dish-desc">Poached eggs on toasted muffins with velvety hollandaise — a weekend ritual for regulars.</div>
+      <img class="dish-img" src="https://images.unsplash.com/photo-1608039829572-78524f79c4c7?w=600&q=80" alt="Eggs Benedictine" />
+      <div class="dish-card-body">
+        <div class="dish-name">Eggs Benedictine</div>
+        <div class="dish-desc">Poached eggs on toasted muffins with velvety hollandaise — a weekend ritual for regulars.</div>
+      </div>
     </div>
     <div class="dish-card">
-      <div class="dish-emoji">🥞</div>
-      <div class="dish-name">Fluffy Pancake Stack</div>
-      <div class="dish-desc">Thick buttermilk pancakes with maple, fresh berries and whipped cream. Morning indulgence, redefined.</div>
+      <img class="dish-img" src="https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=600&q=80" alt="Fluffy Pancake Stack" />
+      <div class="dish-card-body">
+        <div class="dish-name">Fluffy Pancake Stack</div>
+        <div class="dish-desc">Thick buttermilk pancakes with maple, fresh berries and whipped cream. Morning indulgence, redefined.</div>
+      </div>
     </div>
     <div class="dish-card">
-      <div class="dish-emoji">🫙</div>
-      <div class="dish-name">Overnight Oats & Granola</div>
-      <div class="dish-desc">For the health-conscious early bird. Cold-soaked oats with seasonal fruits and house granola.</div>
+      <img class="dish-img" src="https://images.unsplash.com/photo-1517093728-9e0a22b4a4e0?w=600&q=80" alt="Overnight Oats" />
+      <div class="dish-card-body">
+        <div class="dish-name">Overnight Oats & Granola</div>
+        <div class="dish-desc">For the health-conscious early bird. Cold-soaked oats with seasonal fruits and house granola.</div>
+      </div>
     </div>
   </div>
 
   <div class="menu-panel" id="tab-mains">
     <div class="dish-card featured">
-      <div class="dish-badge">⭐ Chef's Pride</div>
-      <div class="dish-emoji">🥩</div>
-      <div class="dish-name">Chicken Rosemary Steak</div>
-      <div class="dish-desc">A tender chicken breast, marinated in fresh rosemary and garlic, pan-seared to perfection. The dish that made Wise Owl's rooftop legendary.</div>
-      <div class="dish-note">⏳ Made fresh — allow 35–45 min</div>
+      <img class="dish-img" src="https://images.unsplash.com/photo-1432139509613-5c4255815697?w=600&q=80" alt="Chicken Rosemary Steak" />
+      <div class="dish-card-body">
+        <div class="dish-badge">⭐ Chef's Pride</div>
+        <div class="dish-name">Chicken Rosemary Steak</div>
+        <div class="dish-desc">A tender chicken breast, marinated in fresh rosemary and garlic, pan-seared to perfection. The dish that made Wise Owl's rooftop legendary.</div>
+        <div class="dish-note">⏳ Made fresh — allow 35–45 min</div>
+      </div>
     </div>
     <div class="dish-card featured">
-      <div class="dish-badge">⭐ Local Favourite</div>
-      <div class="dish-emoji">🐟</div>
-      <div class="dish-name">Grilled Bhetki</div>
-      <div class="dish-desc">Fresh Bhetki fillet grilled whole and served with a bright lemon butter sauce. A Kolkata original with continental elegance.</div>
-      <div class="dish-note">⏳ Made fresh — allow 30–40 min</div>
+      <img class="dish-img" src="https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=600&q=80" alt="Grilled Bhetki" />
+      <div class="dish-card-body">
+        <div class="dish-badge">⭐ Local Favourite</div>
+        <div class="dish-name">Grilled Bhetki</div>
+        <div class="dish-desc">Fresh Bhetki fillet grilled whole and served with a bright lemon butter sauce. A Kolkata original with continental elegance.</div>
+        <div class="dish-note">⏳ Made fresh — allow 30–40 min</div>
+      </div>
     </div>
     <div class="dish-card">
-      <div class="dish-emoji">🍝</div>
-      <div class="dish-name">Spaghetti Aglio e Olio</div>
-      <div class="dish-desc">House-made pasta tossed with golden garlic, chilli flakes, parsley and premium olive oil. Simple, perfect.</div>
+      <img class="dish-img" src="https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=600&q=80" alt="Spaghetti Aglio e Olio" />
+      <div class="dish-card-body">
+        <div class="dish-name">Spaghetti Aglio e Olio</div>
+        <div class="dish-desc">House-made pasta tossed with golden garlic, chilli flakes, parsley and premium olive oil. Simple, perfect.</div>
+      </div>
     </div>
     <div class="dish-card">
-      <div class="dish-emoji">🫕</div>
-      <div class="dish-name">Continental Chicken Stew</div>
-      <div class="dish-desc">Slow-simmered vegetables and chicken in a rich herb broth. The dish that feels like a hug.</div>
+      <img class="dish-img" src="https://images.unsplash.com/photo-1547592180-85f173990554?w=600&q=80" alt="Continental Chicken Stew" />
+      <div class="dish-card-body">
+        <div class="dish-name">Continental Chicken Stew</div>
+        <div class="dish-desc">Slow-simmered vegetables and chicken in a rich herb broth. The dish that feels like a hug.</div>
+      </div>
     </div>
   </div>
 
   <div class="menu-panel" id="tab-grill">
     <div class="dish-card">
-      <div class="dish-emoji">🔥</div>
-      <div class="dish-name">Seekh Kebab</div>
-      <div class="dish-desc">Hand-minced chicken mixed with caramelized onions and aromatic spices, threaded and charcoal-grilled. Served with mint chutney.</div>
+      <img class="dish-img" src="https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?w=600&q=80" alt="Seekh Kebab" />
+      <div class="dish-card-body">
+        <div class="dish-name">Seekh Kebab</div>
+        <div class="dish-desc">Hand-minced chicken mixed with caramelized onions and aromatic spices, threaded and charcoal-grilled. Served with mint chutney.</div>
+      </div>
     </div>
     <div class="dish-card">
-      <div class="dish-emoji">🍗</div>
-      <div class="dish-name">Tandoori Half Chicken</div>
-      <div class="dish-desc">Overnight marinated chicken, charred and smoky, arriving at the table still sizzling. A Charcoal classic.</div>
+      <img class="dish-img" src="https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?w=600&q=80" alt="Tandoori Half Chicken" />
+      <div class="dish-card-body">
+        <div class="dish-name">Tandoori Half Chicken</div>
+        <div class="dish-desc">Overnight marinated chicken, charred and smoky, arriving at the table still sizzling. A Charcoal classic.</div>
+      </div>
     </div>
     <div class="dish-card">
-      <div class="dish-emoji">🫑</div>
-      <div class="dish-name">Paneer Tikka</div>
-      <div class="dish-desc">Thick paneer cubes in spiced yoghurt marinade, grilled in the charcoal oven until blistered and golden.</div>
+      <img class="dish-img" src="https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?w=600&q=80" alt="Paneer Tikka" />
+      <div class="dish-card-body">
+        <div class="dish-name">Paneer Tikka</div>
+        <div class="dish-desc">Thick paneer cubes in spiced yoghurt marinade, grilled in the charcoal oven until blistered and golden.</div>
+      </div>
     </div>
     <div class="dish-card">
-      <div class="dish-emoji">🥙</div>
-      <div class="dish-name">Mutton Galouti</div>
-      <div class="dish-desc">The softest kebab you'll ever have. Fine-ground mutton with 30+ spices, melting on a warm roomali roti.</div>
+      <img class="dish-img" src="https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=600&q=80" alt="Mutton Galouti" />
+      <div class="dish-card-body">
+        <div class="dish-name">Mutton Galouti</div>
+        <div class="dish-desc">The softest kebab you'll ever have. Fine-ground mutton with 30+ spices, melting on a warm roomali roti.</div>
+      </div>
     </div>
   </div>
 
   <div class="menu-panel" id="tab-beverages">
     <div class="dish-card featured">
-      <div class="dish-badge">⭐ House Special</div>
-      <div class="dish-emoji">☕</div>
-      <div class="dish-name">Special Cappuccino</div>
-      <div class="dish-desc">Our signature cappuccino — a double shot of medium-roast espresso, velvety microfoam and a dusting of dark cocoa. The reason mornings exist.</div>
+      <img class="dish-img" src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=600&q=80" alt="Special Cappuccino" />
+      <div class="dish-card-body">
+        <div class="dish-badge">⭐ House Special</div>
+        <div class="dish-name">Special Cappuccino</div>
+        <div class="dish-desc">Our signature cappuccino — a double shot of medium-roast espresso, velvety microfoam and a dusting of dark cocoa. The reason mornings exist.</div>
+      </div>
     </div>
     <div class="dish-card">
-      <div class="dish-emoji">🫖</div>
-      <div class="dish-name">Cold Brew Single Origin</div>
-      <div class="dish-desc">12-hour cold-steeped single-origin coffee. Smooth, bold and ice cold — perfect for Kolkata afternoons.</div>
+      <img class="dish-img" src="https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=600&q=80" alt="Cold Brew" />
+      <div class="dish-card-body">
+        <div class="dish-name">Cold Brew Single Origin</div>
+        <div class="dish-desc">12-hour cold-steeped single-origin coffee. Smooth, bold and ice cold — perfect for Kolkata afternoons.</div>
+      </div>
     </div>
     <div class="dish-card">
-      <div class="dish-emoji">🧋</div>
-      <div class="dish-name">Belgian Hot Chocolate</div>
-      <div class="dish-desc">Thick, rich, and intensely chocolatey. Made with real Belgian couverture. Not for the faint-hearted.</div>
+      <img class="dish-img" src="https://images.unsplash.com/photo-1542990253-0d0f5be5f0ed?w=600&q=80" alt="Belgian Hot Chocolate" />
+      <div class="dish-card-body">
+        <div class="dish-name">Belgian Hot Chocolate</div>
+        <div class="dish-desc">Thick, rich, and intensely chocolatey. Made with real Belgian couverture. Not for the faint-hearted.</div>
+      </div>
     </div>
     <div class="dish-card">
-      <div class="dish-emoji">🍹</div>
-      <div class="dish-name">Fresh Lemonade & Mocktails</div>
-      <div class="dish-desc">House-squeezed lemonades, fresh fruit mocktails, and seasonal coolers — rotating with the weather.</div>
+      <img class="dish-img" src="https://images.unsplash.com/photo-1497534446932-c925b458314e?w=600&q=80" alt="Fresh Lemonade" />
+      <div class="dish-card-body">
+        <div class="dish-name">Fresh Lemonade & Mocktails</div>
+        <div class="dish-desc">House-squeezed lemonades, fresh fruit mocktails, and seasonal coolers — rotating with the weather.</div>
+      </div>
     </div>
   </div>
 
@@ -840,14 +914,38 @@
       </div>
     </div>
     <div class="social-row reveal reveal-delay-2">
-      <a href="https://www.facebook.com" target="_blank" class="social-btn">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
-        Facebook
-      </a>
-      <a href="https://www.instagram.com" target="_blank" class="social-btn">
+      <a href="https://www.instagram.com/wiseowlthecoffeeshop/" target="_blank" class="social-btn">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
         Instagram
       </a>
+      <a href="https://www.facebook.com/WiseOwlTheCoffeeShop/" target="_blank" class="social-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
+        Facebook
+      </a>
+      <a href="https://www.zomato.com/kolkata/wise-owl-the-coffee-shop-hindustan-park" target="_blank" class="social-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
+        Zomato
+      </a>
+      <a href="https://wa.me/917003647494" target="_blank" class="social-btn social-btn-wa">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        WhatsApp
+      </a>
+    </div>
+    <div class="contact-form-wrap reveal reveal-delay-2">
+      <h3>Request a Callback</h3>
+      <p>Leave your details and we'll get back to you — for reservations, events, or just a question.</p>
+      <form class="cform" action="https://submit-form.com/fkJ24ELAg" method="POST">
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name" placeholder="Your name" required />
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" placeholder="Your email" required />
+        <label for="message">Message</label>
+        <textarea id="message" name="message" placeholder="What's on your mind? (reservation, party booking, query…)" required></textarea>
+        <button type="submit" class="cform-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          Send Message
+        </button>
+      </form>
     </div>
   </div>
   <div class="map-wrap reveal reveal-delay-1">
@@ -864,6 +962,11 @@
   <div>
     <div class="footer-brand">🦉 Wise <span>Owl</span></div>
     <div class="footer-tagline">The Coffee Shop · The Steakhouse · Charcoal</div>
+  </div>
+  <div style="display:flex; gap:1rem; flex-wrap:wrap; align-items:center;">
+    <a href="https://www.instagram.com/wiseowlthecoffeeshop/" target="_blank" style="color:rgba(255,253,250,0.35); text-decoration:none; font-size:0.78rem; transition:color 0.2s;" onmouseover="this.style.color='#f39c12'" onmouseout="this.style.color='rgba(255,253,250,0.35)'">Instagram</a>
+    <a href="https://www.facebook.com/WiseOwlTheCoffeeShop/" target="_blank" style="color:rgba(255,253,250,0.35); text-decoration:none; font-size:0.78rem; transition:color 0.2s;" onmouseover="this.style.color='#f39c12'" onmouseout="this.style.color='rgba(255,253,250,0.35)'">Facebook</a>
+    <a href="https://www.zomato.com/kolkata/wise-owl-the-coffee-shop-hindustan-park" target="_blank" style="color:rgba(255,253,250,0.35); text-decoration:none; font-size:0.78rem; transition:color 0.2s;" onmouseover="this.style.color='#f39c12'" onmouseout="this.style.color='rgba(255,253,250,0.35)'">Zomato</a>
   </div>
   <div class="footer-copy">
     66/2 B Purna Das Road, Kolkata 700029 · © 2025 Wise Owl. All rights reserved.
