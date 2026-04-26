@@ -1,556 +1,599 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Wise Owl — The Coffee Shop & Steakhouse</title>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+  <title>Wise Owl — The Coffee Shop & Steakhouse, Kolkata</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;0,900;1,400;1,700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
+    /* ── RESET ── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --orange: #f39c12;
-      --orange-light: #f8b942;
-      --orange-glow: rgba(243,156,18,0.18);
-      --brown: #3e2723;
+      --orange:    #f39c12;
+      --orange-lt: #f8b942;
+      --brown:     #3e2723;
       --brown-mid: #6d4c41;
-      --cream: #fffdfa;
-      --cream-warm: #fef9ef;
-      --obsidian: #1a120b;
-      --obsidian-soft: #221a10;
-      --text-light: #c8b89a;
-      --radius: 2.8rem;
-      --radius-sm: 1rem;
+      --cream:     #fffdfa;
+      --cream-w:   #fef9ef;
+      --obsidian:  #1a120b;
+      --dim:       #c8b89a;
     }
 
-    html { scroll-behavior: smooth; }
+    html {
+      scroll-behavior: smooth;
+      /* prevents horizontal scroll at root */
+      overflow-x: hidden;
+    }
 
     body {
       font-family: 'Outfit', sans-serif;
       background: var(--cream);
       color: var(--brown);
+      /* THE KEY FIX: hard-clip anything wider than viewport */
       overflow-x: hidden;
+      width: 100%;
+      position: relative;
     }
 
-    /* ─── SCROLLBAR ─── */
-    ::-webkit-scrollbar { width: 6px; }
+    img { display: block; max-width: 100%; height: auto; }
+    a   { text-decoration: none; }
+
+    /* scrollbar */
+    ::-webkit-scrollbar { width: 4px; }
     ::-webkit-scrollbar-track { background: var(--obsidian); }
-    ::-webkit-scrollbar-thumb { background: var(--orange); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb { background: var(--orange); border-radius: 2px; }
 
-    /* ─── NAV ─── */
-    nav {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-      padding: 1.4rem 3rem;
-      display: flex; align-items: center; justify-content: space-between;
-      transition: all 0.4s ease;
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp   { to { opacity:1; transform:none; } }
+    @keyframes floatBob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+    @keyframes scrollDrop {
+      0%  {transform:scaleY(0);transform-origin:top}
+      50% {transform:scaleY(1);transform-origin:top}
+      51% {transform:scaleY(1);transform-origin:bottom}
+      100%{transform:scaleY(0);transform-origin:bottom}
     }
-    nav.scrolled {
-      background: rgba(26,18,11,0.75);
-      backdrop-filter: blur(18px) saturate(1.5);
-      -webkit-backdrop-filter: blur(18px) saturate(1.5);
-      border-bottom: 1px solid rgba(243,156,18,0.12);
-      padding: 1rem 3rem;
-    }
-    .nav-brand {
-      display: flex; align-items: center; gap: 0.7rem;
-      text-decoration: none;
-    }
-    .nav-owl {
-      font-size: 1.7rem; line-height: 1;
-    }
-    .nav-brand-text {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.15rem; font-weight: 700;
-      color: var(--cream); letter-spacing: 0.01em;
-    }
-    .nav-brand-text span { color: var(--orange); }
-    .nav-links {
-      display: flex; gap: 2.2rem; list-style: none;
-    }
-    .nav-links a {
-      font-size: 0.88rem; font-weight: 500; letter-spacing: 0.06em;
-      text-transform: uppercase; color: rgba(255,253,250,0.75);
-      text-decoration: none; transition: color 0.2s;
-    }
-    .nav-links a:hover { color: var(--orange); }
-    .nav-cta {
-      background: var(--orange); color: var(--obsidian) !important;
-      padding: 0.55rem 1.4rem; border-radius: 2rem;
-      font-weight: 600 !important; color: var(--obsidian) !important;
-      transition: background 0.2s, transform 0.2s !important;
-    }
-    .nav-cta:hover { background: var(--orange-light) !important; transform: translateY(-1px); }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:none} }
 
-    /* ─── HERO ─── */
-    #hero {
-      position: relative; min-height: 100vh;
-      display: flex; align-items: flex-end;
+    /* ── REVEAL ── */
+    .reveal {
+      opacity: 0; transform: translateY(26px);
+      transition: opacity .6s ease, transform .6s ease;
+    }
+    .reveal.visible { opacity:1; transform:none; }
+    .reveal.d1 { transition-delay:.1s }
+    .reveal.d2 { transition-delay:.2s }
+    .reveal.d3 { transition-delay:.32s }
+
+    /* ═══════════════════════════
+       NAV
+    ═══════════════════════════ */
+    #navbar {
+      position: fixed; top:0; left:0; right:0; z-index:200;
+      display: flex; align-items:center; justify-content:space-between;
+      padding: 1.2rem 4vw;
+      transition: background .4s, padding .3s, box-shadow .4s;
+      /* prevent nav from causing overflow */
+      max-width: 100vw;
       overflow: hidden;
     }
-    .hero-bg {
-      position: absolute; inset: 0;
-      background-image: url('https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=1600&q=80');
-      background-size: cover; background-position: center;
-      filter: brightness(0.45) saturate(1.2);
-      transition: transform 0.1s ease-out;
+    #navbar.scrolled {
+      background: rgba(26,18,11,.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(243,156,18,.14);
+      padding: .85rem 4vw;
+      box-shadow: 0 4px 28px rgba(0,0,0,.3);
     }
-    /* Gradient overlay */
+    .nav-brand { display:flex; align-items:center; gap:.55rem; flex-shrink:0; min-width:0; }
+    .nav-logo   { font-size:1.55rem; line-height:1; flex-shrink:0; }
+    .nav-name   {
+      font-family:'Playfair Display',serif; font-size:1.05rem; font-weight:700;
+      color:var(--cream); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    }
+    .nav-name span { color:var(--orange); }
+
+    /* desktop links */
+    .nav-links {
+      display:flex; gap:1.8rem; list-style:none; align-items:center;
+    }
+    .nav-links a {
+      font-size:.8rem; font-weight:500; letter-spacing:.07em;
+      text-transform:uppercase; color:rgba(255,253,250,.72);
+      transition:color .2s; white-space:nowrap;
+    }
+    .nav-links a:hover { color:var(--orange); }
+    .nav-cta {
+      background:var(--orange)!important; color:var(--obsidian)!important;
+      padding:.48rem 1.2rem; border-radius:2rem; font-weight:600!important;
+    }
+    .nav-cta:hover { background:var(--orange-lt)!important; }
+
+    /* hamburger */
+    .nav-ham {
+      display:none; flex-direction:column; gap:5px;
+      cursor:pointer; padding:4px; background:none; border:none;
+      flex-shrink:0;
+    }
+    .nav-ham span {
+      display:block; width:22px; height:2px; background:var(--cream);
+      border-radius:2px; transition:all .28s;
+    }
+    .nav-ham.open span:nth-child(1) { transform:translateY(7px) rotate(45deg); }
+    .nav-ham.open span:nth-child(2) { opacity:0; }
+    .nav-ham.open span:nth-child(3) { transform:translateY(-7px) rotate(-45deg); }
+
+    /* drawer */
+    .nav-drawer {
+      position:fixed; inset:0; background:rgba(26,18,11,.97);
+      z-index:199; display:none;
+      flex-direction:column; align-items:center; justify-content:center; gap:2.2rem;
+    }
+    .nav-drawer.open { display:flex; }
+    .nav-drawer a {
+      font-family:'Playfair Display',serif; font-size:2rem;
+      color:var(--cream); font-weight:700; transition:color .2s;
+    }
+    .nav-drawer a:hover { color:var(--orange); }
+
+    /* ═══════════════════════════
+       HERO
+    ═══════════════════════════ */
+    #hero {
+      position:relative; min-height:100svh;
+      display:flex; align-items:flex-end;
+      overflow:hidden; width:100%;
+    }
+    .hero-bg {
+      position:absolute; inset:0; z-index:0;
+      background:url('https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=1600&q=80') center/cover no-repeat;
+      filter:brightness(.42) saturate(1.15);
+      will-change:transform;
+    }
     .hero-bg::after {
-      content: '';
-      position: absolute; inset: 0;
-      background: linear-gradient(to top, var(--obsidian) 0%, rgba(26,18,11,0.55) 45%, transparent 100%);
+      content:''; position:absolute; inset:0;
+      background:linear-gradient(to top, var(--obsidian) 0%, rgba(26,18,11,.48) 50%, transparent 100%);
     }
     .hero-content {
-      position: relative; z-index: 2;
-      padding: 0 5vw 8vh;
-      max-width: 820px;
+      position:relative; z-index:2;
+      padding: 0 6vw 10vh; width:100%; max-width:780px;
     }
     .hero-eyebrow {
-      font-size: 0.8rem; font-weight: 600; letter-spacing: 0.2em;
-      text-transform: uppercase; color: var(--orange);
-      margin-bottom: 1.2rem;
-      display: flex; align-items: center; gap: 0.8rem;
+      font-size:.72rem; font-weight:600; letter-spacing:.2em;
+      text-transform:uppercase; color:var(--orange); margin-bottom:1rem;
+      display:flex; align-items:center; gap:.7rem; flex-wrap:wrap;
+      opacity:0; transform:translateY(18px);
+      animation:fadeUp .65s .18s forwards;
     }
-    .hero-eyebrow::before {
-      content: ''; display: block;
-      width: 2.5rem; height: 1.5px; background: var(--orange);
-    }
+    .hero-eyebrow::before { content:''; width:1.8rem; height:1.5px; background:var(--orange); flex-shrink:0; }
     .hero-title {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(3.2rem, 8vw, 6.5rem);
-      font-weight: 900; line-height: 1.02;
-      color: var(--cream); margin-bottom: 1.5rem;
+      font-family:'Playfair Display',serif;
+      font-size:clamp(2.6rem,9vw,6rem); font-weight:900; line-height:1.04;
+      color:var(--cream); margin-bottom:1.2rem;
+      opacity:0; transform:translateY(22px);
+      animation:fadeUp .68s .34s forwards;
     }
-    .hero-title em { font-style: italic; color: var(--orange); }
+    .hero-title em { font-style:italic; color:var(--orange); }
     .hero-sub {
-      font-size: 1.1rem; font-weight: 300;
-      color: rgba(255,253,250,0.7); max-width: 480px;
-      line-height: 1.7; margin-bottom: 2.8rem;
+      font-size:clamp(.9rem,2.5vw,1.05rem); font-weight:300;
+      color:rgba(255,253,250,.68); max-width:440px; line-height:1.76;
+      margin-bottom:2.4rem;
+      opacity:0; transform:translateY(18px);
+      animation:fadeUp .65s .5s forwards;
     }
-    .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .hero-actions {
+      display:flex; gap:.85rem; flex-wrap:wrap;
+      opacity:0; transform:translateY(14px);
+      animation:fadeUp .6s .66s forwards;
+    }
     .btn-primary {
-      display: inline-flex; align-items: center; gap: 0.5rem;
-      background: var(--orange); color: var(--obsidian);
-      padding: 0.9rem 2.2rem; border-radius: 3rem;
-      font-weight: 600; font-size: 0.95rem;
-      text-decoration: none; transition: all 0.25s;
-      box-shadow: 0 8px 32px rgba(243,156,18,0.35);
+      display:inline-flex; align-items:center; gap:.4rem;
+      background:var(--orange); color:var(--obsidian);
+      padding:.82rem 1.9rem; border-radius:3rem;
+      font-weight:600; font-size:.9rem;
+      box-shadow:0 8px 26px rgba(243,156,18,.38);
+      transition:all .25s; white-space:nowrap;
     }
-    .btn-primary:hover { background: var(--orange-light); transform: translateY(-2px); box-shadow: 0 12px 40px rgba(243,156,18,0.45); }
+    .btn-primary:hover { background:var(--orange-lt); transform:translateY(-2px); }
     .btn-outline {
-      display: inline-flex; align-items: center; gap: 0.5rem;
-      background: transparent; color: var(--cream);
-      padding: 0.9rem 2.2rem; border-radius: 3rem;
-      font-weight: 500; font-size: 0.95rem;
-      border: 1.5px solid rgba(255,253,250,0.3);
-      text-decoration: none; transition: all 0.25s;
+      display:inline-flex; align-items:center; gap:.4rem;
+      background:transparent; color:var(--cream);
+      padding:.82rem 1.9rem; border-radius:3rem;
+      font-weight:500; font-size:.9rem;
+      border:1.5px solid rgba(255,253,250,.28);
+      transition:all .25s; white-space:nowrap;
     }
-    .btn-outline:hover { border-color: var(--orange); color: var(--orange); }
+    .btn-outline:hover { border-color:var(--orange); color:var(--orange); }
 
-    /* Floating badge */
+    /* floating badge – hidden on mobile */
     .hero-badge {
-      position: absolute; right: 6vw; top: 50%;
-      transform: translateY(-50%);
-      z-index: 2;
-      background: rgba(26,18,11,0.7);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(243,156,18,0.25);
-      border-radius: 2rem; padding: 1.8rem;
-      text-align: center; min-width: 160px;
-      animation: float 4s ease-in-out infinite;
+      position:absolute; right:6vw; top:50%; transform:translateY(-50%);
+      z-index:2; background:rgba(26,18,11,.72);
+      backdrop-filter:blur(14px); border:1px solid rgba(243,156,18,.28);
+      border-radius:2rem; padding:1.5rem; text-align:center; min-width:140px;
+      animation:floatBob 4s ease-in-out infinite;
     }
-    @keyframes float {
-      0%, 100% { transform: translateY(-50%) translateY(0); }
-      50% { transform: translateY(-50%) translateY(-10px); }
-    }
-    .hero-badge .badge-owl { font-size: 2.8rem; }
-    .hero-badge .badge-since { font-size: 0.7rem; letter-spacing: 0.15em; color: var(--orange); text-transform: uppercase; margin-top: 0.4rem; }
-    .hero-badge .badge-year { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 900; color: var(--cream); line-height: 1; }
+    .badge-owl  { font-size:2.4rem; }
+    .badge-since { font-size:.65rem; letter-spacing:.14em; color:var(--orange); text-transform:uppercase; margin-top:.3rem; }
+    .badge-year { font-family:'Playfair Display',serif; font-size:1.8rem; font-weight:900; color:var(--cream); line-height:1.1; }
 
-    /* Scroll hint */
     .scroll-hint {
-      position: absolute; bottom: 2.5rem; right: 50%;
-      transform: translateX(50%);
-      z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 0.4rem;
+      position:absolute; bottom:2rem; left:50%; transform:translateX(-50%);
+      z-index:2; display:flex; flex-direction:column; align-items:center; gap:.35rem;
     }
-    .scroll-hint span { font-size: 0.65rem; letter-spacing: 0.2em; color: rgba(255,253,250,0.4); text-transform: uppercase; }
+    .scroll-hint span { font-size:.58rem; letter-spacing:.2em; color:rgba(255,253,250,.35); text-transform:uppercase; }
     .scroll-line {
-      width: 1px; height: 3rem;
-      background: linear-gradient(to bottom, rgba(255,253,250,0.3), transparent);
-      animation: scrollAnim 1.8s ease-in-out infinite;
-    }
-    @keyframes scrollAnim {
-      0% { transform: scaleY(0); transform-origin: top; }
-      50% { transform: scaleY(1); transform-origin: top; }
-      51% { transform: scaleY(1); transform-origin: bottom; }
-      100% { transform: scaleY(0); transform-origin: bottom; }
+      width:1px; height:2.6rem;
+      background:linear-gradient(to bottom,rgba(255,253,250,.35),transparent);
+      animation:scrollDrop 1.8s ease-in-out infinite;
     }
 
-    /* ─── SECTION BASICS ─── */
-    section { padding: 7rem 5vw; }
-    .section-label {
-      font-size: 0.72rem; font-weight: 600; letter-spacing: 0.22em;
-      text-transform: uppercase; color: var(--orange);
-      display: flex; align-items: center; gap: 0.7rem;
-      margin-bottom: 1rem;
-    }
-    .section-label::before {
-      content: ''; width: 2rem; height: 1.5px; background: var(--orange);
-    }
-    h2.section-title {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(2rem, 4vw, 3.2rem);
-      font-weight: 800; line-height: 1.1;
-      color: var(--brown); margin-bottom: 1.2rem;
-    }
-    .section-body {
-      font-size: 1rem; line-height: 1.8; color: var(--brown-mid);
-      max-width: 560px;
-    }
+    /* ═══════════════════════════
+       SHARED
+    ═══════════════════════════ */
+    section { padding:5.5rem 6vw; width:100%; }
 
-    /* ─── ABOUT ─── */
+    .sec-label {
+      font-size:.68rem; font-weight:600; letter-spacing:.22em;
+      text-transform:uppercase; color:var(--orange);
+      display:flex; align-items:center; gap:.6rem; margin-bottom:.85rem;
+    }
+    .sec-label::before { content:''; width:1.6rem; height:1.5px; background:var(--orange); flex-shrink:0; }
+
+    h2.sec-title {
+      font-family:'Playfair Display',serif;
+      font-size:clamp(1.75rem,4vw,3rem); font-weight:800; line-height:1.12;
+      margin-bottom:1rem;
+    }
+    .sec-body { font-size:.94rem; line-height:1.82; color:var(--brown-mid); max-width:540px; }
+
+    /* ═══════════════════════════
+       ABOUT
+    ═══════════════════════════ */
     #about {
-      background: var(--obsidian);
-      display: grid; grid-template-columns: 1fr 1fr; gap: 6rem; align-items: center;
+      background:var(--obsidian);
+      display:grid; grid-template-columns:1fr 1fr; gap:4rem; align-items:center;
     }
-    #about .section-label { color: var(--orange); }
-    #about h2.section-title { color: var(--cream); }
-    #about .section-body { color: var(--text-light); }
-    .about-img-wrap {
-      position: relative;
-      border-radius: var(--radius); overflow: hidden;
-    }
-    .about-img-wrap img {
-      width: 100%; aspect-ratio: 4/5; object-fit: cover;
-      border-radius: var(--radius); display: block;
-    }
-    .about-img-wrap::before {
-      content: '';
-      position: absolute; inset: -1px;
-      border-radius: calc(var(--radius) + 1px);
-      background: linear-gradient(135deg, var(--orange) 0%, transparent 40%, transparent 60%, var(--brown-mid) 100%);
-      z-index: -1;
-    }
+    #about h2.sec-title { color:var(--cream); }
+    #about .sec-body    { color:var(--dim); }
+
     .about-stats {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 3rem;
+      display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-top:2.2rem;
     }
     .stat-card {
-      background: rgba(255,253,250,0.04);
-      border: 1px solid rgba(255,253,250,0.08);
-      border-radius: var(--radius-sm); padding: 1.5rem;
+      background:rgba(255,253,250,.04); border:1px solid rgba(255,253,250,.08);
+      border-radius:.8rem; padding:1.1rem;
     }
-    .stat-num {
-      font-family: 'Playfair Display', serif;
-      font-size: 2.2rem; font-weight: 900; color: var(--orange);
-    }
-    .stat-label { font-size: 0.82rem; color: var(--text-light); margin-top: 0.2rem; }
+    .stat-num   { font-family:'Playfair Display',serif; font-size:1.9rem; font-weight:900; color:var(--orange); }
+    .stat-label { font-size:.76rem; color:var(--dim); margin-top:.15rem; }
+
     .about-quote {
-      margin-top: 2rem; padding: 1.5rem;
-      border-left: 3px solid var(--orange);
-      background: rgba(243,156,18,0.06);
-      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      margin-top:1.6rem; padding:1.25rem 1.4rem;
+      border-left:3px solid var(--orange);
+      background:rgba(243,156,18,.06); border-radius:0 .7rem .7rem 0;
     }
-    .about-quote p { font-style: italic; font-size: 1.05rem; color: var(--text-light); line-height: 1.7; }
-    .about-quote cite { display: block; margin-top: 0.7rem; font-size: 0.8rem; color: var(--orange); font-style: normal; letter-spacing: 0.1em; }
+    .about-quote p    { font-style:italic; font-size:.95rem; color:var(--dim); line-height:1.7; }
+    .about-quote cite { display:block; margin-top:.5rem; font-size:.75rem; color:var(--orange); font-style:normal; letter-spacing:.1em; }
 
-    /* ─── SPACES ─── */
-    #spaces { background: var(--cream-warm); }
+    .about-img-wrap { border-radius:2.4rem; overflow:hidden; box-shadow:0 28px 72px rgba(0,0,0,.5); }
+    .about-img-wrap img { width:100%; aspect-ratio:4/5; object-fit:cover; }
+
+    /* ═══════════════════════════
+       SPACES
+    ═══════════════════════════ */
+    #spaces { background:var(--cream-w); }
     .spaces-header {
-      display: flex; justify-content: space-between; align-items: flex-end;
-      margin-bottom: 3.5rem; flex-wrap: wrap; gap: 1.5rem;
+      display:flex; justify-content:space-between; align-items:flex-end;
+      margin-bottom:2.6rem; flex-wrap:wrap; gap:1.2rem;
     }
-    .spaces-grid {
-      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.8rem;
-    }
-    .space-card {
-      border-radius: var(--radius); overflow: hidden;
-      position: relative; cursor: pointer;
-      transition: transform 0.35s cubic-bezier(.22,.68,0,1.2), box-shadow 0.35s ease;
-      background: var(--obsidian);
-    }
-    .space-card:hover {
-      transform: translateY(-8px) scale(1.012);
-      box-shadow: 0 28px 60px rgba(62,39,35,0.22);
-    }
-    .space-card-img {
-      aspect-ratio: 3/4; width: 100%;
-      object-fit: cover; display: block;
-      filter: brightness(0.55) saturate(1.1);
-      transition: filter 0.4s ease, transform 0.6s ease;
-    }
-    .space-card:hover .space-card-img {
-      filter: brightness(0.65) saturate(1.3);
-      transform: scale(1.04);
-    }
-    .space-card-body {
-      position: absolute; bottom: 0; left: 0; right: 0;
-      padding: 2rem 1.8rem;
-      background: linear-gradient(to top, rgba(26,18,11,0.96) 0%, transparent 100%);
-    }
-    .space-floor {
-      font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase;
-      color: var(--orange); margin-bottom: 0.4rem;
-    }
-    .space-name {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.6rem; font-weight: 700; color: var(--cream); line-height: 1.1;
-      margin-bottom: 0.7rem;
-    }
-    .space-desc { font-size: 0.85rem; color: rgba(255,253,250,0.6); line-height: 1.6; }
-    .space-tag {
-      display: inline-block; margin-top: 1rem;
-      background: rgba(243,156,18,0.15); border: 1px solid rgba(243,156,18,0.3);
-      color: var(--orange); font-size: 0.72rem; letter-spacing: 0.1em;
-      padding: 0.35rem 0.9rem; border-radius: 2rem; text-transform: uppercase;
-    }
-    .space-hours { font-size: 0.8rem; color: rgba(255,253,250,0.45); margin-top: 0.5rem; }
+    .spaces-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.4rem; }
 
-    /* ─── MENU ─── */
-    #menu { background: var(--obsidian); }
-    .menu-header { margin-bottom: 3.5rem; }
+    .space-card {
+      border-radius:2.4rem; overflow:hidden; position:relative; cursor:pointer;
+      transition:transform .35s cubic-bezier(.22,.68,0,1.2), box-shadow .35s;
+      background:var(--obsidian);
+    }
+    .space-card:hover { transform:translateY(-6px) scale(1.01); box-shadow:0 22px 52px rgba(62,39,35,.2); }
+    .space-card-img {
+      aspect-ratio:3/4; width:100%; object-fit:cover;
+      filter:brightness(.52) saturate(1.1);
+      transition:filter .4s, transform .6s;
+    }
+    .space-card:hover .space-card-img { filter:brightness(.62) saturate(1.3); transform:scale(1.04); }
+    .space-card-body {
+      position:absolute; bottom:0; left:0; right:0; padding:1.6rem 1.4rem;
+      background:linear-gradient(to top,rgba(26,18,11,.97) 0%,transparent 100%);
+    }
+    .space-floor  { font-size:.65rem; letter-spacing:.2em; text-transform:uppercase; color:var(--orange); margin-bottom:.3rem; }
+    .space-name   { font-family:'Playfair Display',serif; font-size:1.45rem; font-weight:700; color:var(--cream); line-height:1.1; margin-bottom:.55rem; }
+    .space-desc   { font-size:.8rem; color:rgba(255,253,250,.56); line-height:1.6; }
+    .space-tag    {
+      display:inline-block; margin-top:.8rem;
+      background:rgba(243,156,18,.14); border:1px solid rgba(243,156,18,.3);
+      color:var(--orange); font-size:.68rem; letter-spacing:.1em;
+      padding:.28rem .8rem; border-radius:2rem; text-transform:uppercase;
+    }
+    .space-hours  { font-size:.74rem; color:rgba(255,253,250,.38); margin-top:.4rem; }
+
+    /* ═══════════════════════════
+       MENU
+    ═══════════════════════════ */
+    #menu { background:var(--obsidian); }
+    .menu-header { margin-bottom:2.6rem; }
+
     .menu-tabs {
-      display: flex; gap: 0.8rem; margin-top: 2rem; flex-wrap: wrap;
+      display:flex; gap:.6rem; margin-top:1.6rem;
+      flex-wrap:wrap; /* tabs wrap cleanly */
     }
     .menu-tab {
-      padding: 0.55rem 1.5rem; border-radius: 2rem; font-size: 0.85rem;
-      font-weight: 500; cursor: pointer; border: 1.5px solid rgba(255,253,250,0.12);
-      color: rgba(255,253,250,0.5); background: transparent;
-      transition: all 0.25s; font-family: 'Outfit', sans-serif;
+      padding:.46rem 1.2rem; border-radius:2rem; font-size:.8rem;
+      font-weight:500; cursor:pointer;
+      border:1.5px solid rgba(255,253,250,.11);
+      color:rgba(255,253,250,.46); background:transparent;
+      transition:all .22s; font-family:'Outfit',sans-serif;
+      white-space:nowrap;
     }
-    .menu-tab.active, .menu-tab:hover {
-      background: var(--orange); color: var(--obsidian);
-      border-color: var(--orange); font-weight: 600;
+    .menu-tab.active,.menu-tab:hover {
+      background:var(--orange); color:var(--obsidian);
+      border-color:var(--orange); font-weight:600;
     }
-    .menu-panel { display: none; }
-    .menu-panel.active { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; animation: fadeIn 0.4s ease; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+    .menu-panel { display:none; }
+    .menu-panel.active {
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+      gap:1.2rem; animation:fadeIn .35s ease;
+    }
+
     .dish-card {
-      background: rgba(255,253,250,0.04); border: 1px solid rgba(255,253,250,0.08);
-      border-radius: 1.6rem; overflow: hidden; transition: all 0.3s;
+      background:rgba(255,253,250,.04); border:1px solid rgba(255,253,250,.08);
+      border-radius:1.4rem; overflow:hidden; transition:all .28s;
     }
-    .dish-card:hover { background: rgba(255,253,250,0.07); border-color: rgba(243,156,18,0.2); }
-    .dish-card.featured { border-color: rgba(243,156,18,0.35); background: rgba(243,156,18,0.05); }
+    .dish-card:hover { background:rgba(255,253,250,.07); border-color:rgba(243,156,18,.22); }
+    .dish-card.featured { border-color:rgba(243,156,18,.38); background:rgba(243,156,18,.05); }
+
     .dish-img {
-      width: 100%; height: 180px; object-fit: cover; display: block;
-      transition: transform 0.5s ease;
+      width:100%; height:178px; object-fit:cover;
+      transition:transform .5s ease;
+      /* fallback bg so empty space looks intentional */
+      background:var(--brown);
+      /* prevent broken-image icon from showing large */
+      font-size:0;
     }
-    .dish-card:hover .dish-img { transform: scale(1.05); }
-    .dish-card-body { padding: 1.4rem 1.4rem 1.6rem; }
+    .dish-card:hover .dish-img { transform:scale(1.05); }
+    .dish-card-body { padding:1.2rem 1.25rem 1.4rem; }
     .dish-badge {
-      display: inline-block; font-size: 0.65rem; letter-spacing: 0.12em;
-      text-transform: uppercase; color: var(--orange);
-      background: rgba(243,156,18,0.12); border-radius: 1rem;
-      padding: 0.25rem 0.7rem; margin-bottom: 0.8rem;
+      display:inline-block; font-size:.6rem; letter-spacing:.12em;
+      text-transform:uppercase; color:var(--orange);
+      background:rgba(243,156,18,.12); border-radius:1rem;
+      padding:.2rem .6rem; margin-bottom:.7rem;
     }
-    .dish-name {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.2rem; font-weight: 700;
-      color: var(--cream); margin-bottom: 0.5rem;
-    }
-    .dish-desc { font-size: 0.84rem; color: var(--text-light); line-height: 1.6; }
-    .dish-note {
-      margin-top: 0.8rem; font-size: 0.78rem;
-      color: rgba(243,156,18,0.7); font-style: italic;
-    }
+    .dish-name { font-family:'Playfair Display',serif; font-size:1.1rem; font-weight:700; color:var(--cream); margin-bottom:.4rem; }
+    .dish-desc { font-size:.8rem; color:var(--dim); line-height:1.62; }
+    .dish-note { margin-top:.65rem; font-size:.74rem; color:rgba(243,156,18,.72); font-style:italic; }
 
-    .slow-food-banner {
-      margin-top: 3rem; padding: 1.8rem 2.5rem;
-      background: rgba(243,156,18,0.08); border: 1px solid rgba(243,156,18,0.2);
-      border-radius: var(--radius-sm);
-      display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;
+    .slow-banner {
+      margin-top:2.6rem; padding:1.4rem 2rem;
+      background:rgba(243,156,18,.07); border:1px solid rgba(243,156,18,.2);
+      border-radius:.8rem;
+      display:flex; align-items:flex-start; gap:1.1rem; flex-wrap:wrap;
     }
-    .slow-food-banner .icon { font-size: 2rem; }
-    .slow-food-banner strong { font-family: 'Playfair Display', serif; color: var(--orange); font-size: 1.05rem; display: block; }
-    .slow-food-banner p { font-size: 0.88rem; color: var(--text-light); line-height: 1.5; }
+    .slow-banner .icon { font-size:1.7rem; flex-shrink:0; margin-top:.1rem; }
+    .slow-banner strong { font-family:'Playfair Display',serif; color:var(--orange); font-size:.98rem; display:block; margin-bottom:.25rem; }
+    .slow-banner p { font-size:.83rem; color:var(--dim); line-height:1.55; }
 
-    /* ─── EXPERIENCE STRIP ─── */
-    #experience {
-      background: var(--orange);
-      padding: 5rem 5vw;
-    }
-    .experience-inner {
-      display: flex; gap: 4rem; align-items: center; flex-wrap: wrap;
-    }
-    .exp-text { flex: 1; min-width: 280px; }
+    /* ═══════════════════════════
+       EXPERIENCE
+    ═══════════════════════════ */
+    #experience { background:var(--orange); padding:5rem 6vw; }
+    .exp-inner { display:flex; gap:3.5rem; align-items:center; flex-wrap:wrap; }
+    .exp-text  { flex:1; min-width:260px; }
     .exp-text h2 {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(2rem, 4vw, 3rem); font-weight: 900;
-      color: var(--obsidian); line-height: 1.1; margin-bottom: 1rem;
+      font-family:'Playfair Display',serif;
+      font-size:clamp(1.7rem,3.6vw,2.7rem); font-weight:900;
+      color:var(--obsidian); line-height:1.12; margin-bottom:.85rem;
     }
-    .exp-text p { font-size: 1rem; color: rgba(26,18,11,0.7); line-height: 1.7; max-width: 440px; }
-    .exp-pills {
-      display: flex; flex-wrap: wrap; gap: 0.7rem; margin-top: 1.8rem;
-    }
-    .pill {
-      background: rgba(26,18,11,0.12); color: var(--obsidian);
-      padding: 0.5rem 1.2rem; border-radius: 2rem; font-size: 0.84rem; font-weight: 500;
-    }
-    .exp-features {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; flex: 1; min-width: 280px;
-    }
-    .exp-feat {
-      background: rgba(26,18,11,0.1); border-radius: 1.2rem;
-      padding: 1.4rem;
-    }
-    .exp-feat .ef-icon { font-size: 1.8rem; margin-bottom: 0.5rem; }
-    .exp-feat .ef-title { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1rem; color: var(--obsidian); }
-    .exp-feat .ef-sub { font-size: 0.8rem; color: rgba(26,18,11,0.6); margin-top: 0.2rem; }
+    .exp-text p { font-size:.93rem; color:rgba(26,18,11,.68); line-height:1.72; max-width:400px; }
+    .exp-pills  { display:flex; flex-wrap:wrap; gap:.55rem; margin-top:1.4rem; }
+    .pill       { background:rgba(26,18,11,.1); color:var(--obsidian); padding:.42rem 1rem; border-radius:2rem; font-size:.8rem; font-weight:500; }
 
-    /* ─── GALLERY STRIP ─── */
-    #gallery {
-      padding: 5rem 0; overflow: hidden;
-      background: var(--cream-warm);
-    }
-    .gallery-header { padding: 0 5vw; margin-bottom: 2.5rem; }
+    .exp-feats  { display:grid; grid-template-columns:1fr 1fr; gap:.9rem; flex:1; min-width:240px; }
+    .exp-feat   { background:rgba(26,18,11,.09); border-radius:1rem; padding:1.1rem; }
+    .ef-icon    { font-size:1.6rem; margin-bottom:.4rem; }
+    .ef-title   { font-family:'Playfair Display',serif; font-weight:700; font-size:.9rem; color:var(--obsidian); }
+    .ef-sub     { font-size:.75rem; color:rgba(26,18,11,.56); margin-top:.15rem; }
+
+    /* ═══════════════════════════
+       GALLERY
+    ═══════════════════════════ */
+    #gallery { padding:5rem 0; overflow:hidden; background:var(--cream-w); }
+    .gallery-header { padding:0 6vw; margin-bottom:2rem; }
     .gallery-scroll {
-      display: flex; gap: 1.2rem;
-      overflow-x: auto; padding: 0.5rem 5vw 1.5rem;
-      scrollbar-width: none;
+      display:flex; gap:1rem;
+      overflow-x:auto; padding:.4rem 6vw 1rem;
+      scrollbar-width:none; -webkit-overflow-scrolling:touch;
     }
-    .gallery-scroll::-webkit-scrollbar { display: none; }
+    .gallery-scroll::-webkit-scrollbar { display:none; }
     .gallery-scroll img {
-      height: 280px; width: auto; min-width: 220px;
-      border-radius: 1.5rem; object-fit: cover;
-      flex-shrink: 0; filter: brightness(0.88) saturate(1.1);
-      transition: filter 0.3s, transform 0.3s;
+      height:250px; width:auto; min-width:190px; max-width:320px;
+      border-radius:1.3rem; object-fit:cover; flex-shrink:0;
+      filter:brightness(.87) saturate(1.1);
+      transition:filter .3s, transform .3s;
     }
-    .gallery-scroll img:hover { filter: brightness(1) saturate(1.2); transform: scale(1.02); }
+    .gallery-scroll img:hover { filter:brightness(1) saturate(1.2); transform:scale(1.025); }
 
-    /* ─── CONTACT ─── */
+    /* ═══════════════════════════
+       CONTACT
+    ═══════════════════════════ */
     #contact {
-      background: var(--obsidian);
-      display: grid; grid-template-columns: 1fr 1fr; gap: 6rem; align-items: start;
+      background:var(--obsidian);
+      display:grid; grid-template-columns:1fr 1fr; gap:4.5rem; align-items:start;
     }
-    #contact h2.section-title { color: var(--cream); }
-    #contact .section-body { color: var(--text-light); }
-    .contact-cards { margin-top: 2.5rem; display: flex; flex-direction: column; gap: 1.2rem; }
+    #contact h2.sec-title { color:var(--cream); }
+    #contact .sec-body    { color:var(--dim); }
+
+    .contact-cards { margin-top:2rem; display:flex; flex-direction:column; gap:.9rem; }
     .contact-card {
-      display: flex; align-items: flex-start; gap: 1.2rem;
-      background: rgba(255,253,250,0.04); border: 1px solid rgba(255,253,250,0.08);
-      border-radius: 1.2rem; padding: 1.4rem;
-      transition: border-color 0.3s;
+      display:flex; align-items:flex-start; gap:1rem;
+      background:rgba(255,253,250,.04); border:1px solid rgba(255,253,250,.07);
+      border-radius:1rem; padding:1.15rem; transition:border-color .3s;
     }
-    .contact-card:hover { border-color: rgba(243,156,18,0.25); }
-    .cc-icon { font-size: 1.5rem; }
-    .cc-label { font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--orange); margin-bottom: 0.3rem; }
-    .cc-val { font-size: 0.95rem; color: var(--cream); font-weight: 400; }
-    .cc-sub { font-size: 0.8rem; color: var(--text-light); margin-top: 0.15rem; }
-    .map-wrap {
-      border-radius: var(--radius); overflow: hidden;
-      border: 1px solid rgba(255,253,250,0.08);
-      height: 420px;
+    .contact-card:hover { border-color:rgba(243,156,18,.28); }
+    .cc-icon  { font-size:1.3rem; flex-shrink:0; }
+    .cc-label { font-size:.65rem; letter-spacing:.15em; text-transform:uppercase; color:var(--orange); margin-bottom:.25rem; }
+    .cc-val   { font-size:.9rem; color:var(--cream); word-break:break-word; }
+    .cc-sub   { font-size:.76rem; color:var(--dim); margin-top:.1rem; }
+
+    /* social buttons – wrap naturally */
+    .social-row {
+      display:flex; gap:.65rem; margin-top:1.6rem;
+      flex-wrap:wrap; /* KEY: prevents overflow */
     }
-    .map-wrap iframe { width: 100%; height: 100%; border: none; filter: grayscale(0.3) invert(0.92) hue-rotate(180deg); }
-    .social-row { display: flex; gap: 1rem; margin-top: 2rem; }
     .social-btn {
-      display: inline-flex; align-items: center; gap: 0.6rem;
-      padding: 0.7rem 1.5rem; border-radius: 2rem;
-      border: 1.5px solid rgba(255,253,250,0.15);
-      color: rgba(255,253,250,0.7); font-size: 0.85rem;
-      text-decoration: none; transition: all 0.25s;
+      display:inline-flex; align-items:center; gap:.45rem;
+      padding:.56rem 1.1rem; border-radius:2rem;
+      border:1.5px solid rgba(255,253,250,.14);
+      color:rgba(255,253,250,.62); font-size:.78rem;
+      transition:all .25s; white-space:nowrap;
     }
-    .social-btn:hover { border-color: var(--orange); color: var(--orange); }
-    .social-btn-wa:hover { border-color: #25d366; color: #25d366; }
+    .social-btn:hover     { border-color:var(--orange); color:var(--orange); }
+    .social-btn.wa:hover  { border-color:#25d366; color:#25d366; }
 
-    /* ─── CONTACT FORM ─── */
-    .contact-form-wrap {
-      margin-top: 2.8rem;
+    /* callback form */
+    .form-wrap { margin-top:2.2rem; }
+    .form-wrap h3 { font-family:'Playfair Display',serif; font-size:1.2rem; color:var(--cream); margin-bottom:.3rem; }
+    .form-wrap p  { font-size:.8rem; color:var(--dim); margin-bottom:1.15rem; line-height:1.6; }
+    .cform { display:flex; flex-direction:column; gap:.8rem; }
+    .cform label { display:none; }
+    .cform input,.cform textarea {
+      width:100%;
+      background:rgba(255,253,250,.05); border:1.5px solid rgba(255,253,250,.1);
+      border-radius:.8rem; padding:.8rem 1rem;
+      font-family:'Outfit',sans-serif; font-size:.88rem;
+      color:var(--cream); outline:none;
+      transition:border-color .2s, background .2s;
+      /* prevents inputs from overflowing on iOS */
+      -webkit-appearance:none;
     }
-    .contact-form-wrap h3 {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.3rem; color: var(--cream); margin-bottom: 0.4rem;
-    }
-    .contact-form-wrap p { font-size: 0.85rem; color: var(--text-light); margin-bottom: 1.5rem; }
-    .cform { display: flex; flex-direction: column; gap: 1rem; }
-    .cform label { display: none; }
-    .cform input, .cform textarea {
-      width: 100%;
-      background: rgba(255,253,250,0.05);
-      border: 1.5px solid rgba(255,253,250,0.1);
-      border-radius: 0.9rem; padding: 0.9rem 1.2rem;
-      font-family: 'Outfit', sans-serif; font-size: 0.92rem;
-      color: var(--cream); outline: none;
-      transition: border-color 0.2s, background 0.2s;
-    }
-    .cform input::placeholder, .cform textarea::placeholder { color: rgba(200,184,154,0.45); }
-    .cform input:focus, .cform textarea:focus {
-      border-color: var(--orange);
-      background: rgba(243,156,18,0.05);
-    }
-    .cform textarea { resize: vertical; min-height: 110px; }
+    .cform input::placeholder,.cform textarea::placeholder { color:rgba(200,184,154,.38); }
+    .cform input:focus,.cform textarea:focus { border-color:var(--orange); background:rgba(243,156,18,.05); }
+    .cform textarea { resize:vertical; min-height:100px; }
     .cform-btn {
-      display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
-      background: var(--orange); color: var(--obsidian);
-      border: none; border-radius: 3rem; padding: 0.9rem 2rem;
-      font-family: 'Outfit', sans-serif; font-size: 0.95rem; font-weight: 600;
-      cursor: pointer; transition: all 0.25s;
-      box-shadow: 0 6px 24px rgba(243,156,18,0.3);
+      display:inline-flex; align-items:center; justify-content:center; gap:.45rem;
+      background:var(--orange); color:var(--obsidian);
+      border:none; border-radius:3rem; padding:.84rem 1.9rem;
+      font-family:'Outfit',sans-serif; font-size:.9rem; font-weight:600;
+      cursor:pointer; transition:all .25s;
+      box-shadow:0 5px 20px rgba(243,156,18,.3);
+      align-self:flex-start;
+      /* fix tap highlight on mobile */
+      -webkit-tap-highlight-color:transparent;
     }
-    .cform-btn:hover { background: var(--orange-light); transform: translateY(-2px); }
+    .cform-btn:hover { background:var(--orange-lt); transform:translateY(-2px); }
 
-    /* ─── FOOTER ─── */
+    .map-wrap {
+      border-radius:2.4rem; overflow:hidden;
+      border:1px solid rgba(255,253,250,.07);
+      height:100%; min-height:440px;
+    }
+    .map-wrap iframe { width:100%; height:100%; min-height:440px; border:none; display:block; }
+
+    /* ═══════════════════════════
+       FOOTER
+    ═══════════════════════════ */
     footer {
-      background: #0f0a06; padding: 3rem 5vw;
-      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem;
-      border-top: 1px solid rgba(255,253,250,0.06);
+      background:#0e0906; padding:2.2rem 6vw;
+      display:flex; justify-content:space-between; align-items:center;
+      flex-wrap:wrap; gap:1.1rem;
+      border-top:1px solid rgba(255,253,250,.06);
     }
-    .footer-brand {
-      font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--cream);
-    }
-    .footer-brand span { color: var(--orange); }
-    .footer-copy { font-size: 0.78rem; color: rgba(255,253,250,0.3); }
-    .footer-tagline { font-size: 0.8rem; color: rgba(255,253,250,0.25); font-style: italic; }
+    .footer-brand { font-family:'Playfair Display',serif; font-size:1rem; color:var(--cream); }
+    .footer-brand span { color:var(--orange); }
+    .footer-tagline { font-size:.72rem; color:rgba(255,253,250,.24); font-style:italic; margin-top:.12rem; }
+    .footer-links { display:flex; gap:1rem; flex-wrap:wrap; }
+    .footer-links a { font-size:.72rem; color:rgba(255,253,250,.28); transition:color .2s; }
+    .footer-links a:hover { color:var(--orange); }
+    .footer-copy { font-size:.7rem; color:rgba(255,253,250,.2); }
 
-    /* ─── RESPONSIVE ─── */
-    @media (max-width: 1024px) {
-      .spaces-grid { grid-template-columns: 1fr 1fr; }
-      .hero-badge { display: none; }
-    }
-    @media (max-width: 768px) {
-      nav { padding: 1.2rem 1.5rem; }
-      nav.scrolled { padding: 0.9rem 1.5rem; }
-      .nav-links { display: none; }
-      section { padding: 5rem 5vw; }
-      .spaces-grid { grid-template-columns: 1fr; }
-      #about { grid-template-columns: 1fr; gap: 3rem; }
-      #contact { grid-template-columns: 1fr; gap: 3rem; }
-      .exp-features { grid-template-columns: 1fr 1fr; }
-      .hero-content { padding: 0 5vw 6vh; }
-    }
-    @media (max-width: 480px) {
-      .exp-features { grid-template-columns: 1fr; }
-      .about-stats { grid-template-columns: 1fr 1fr; }
+    /* ═══════════════════════════
+       RESPONSIVE
+    ═══════════════════════════ */
+
+    /* Tablet */
+    @media (max-width:1024px) {
+      .spaces-grid  { grid-template-columns:1fr 1fr; }
+      .hero-badge   { display:none; }
     }
 
-    /* ─── REVEAL ANIMATIONS ─── */
-    .reveal {
-      opacity: 0; transform: translateY(30px);
-      transition: opacity 0.7s ease, transform 0.7s ease;
-    }
-    .reveal.visible { opacity: 1; transform: translateY(0); }
-    .reveal-delay-1 { transition-delay: 0.1s; }
-    .reveal-delay-2 { transition-delay: 0.2s; }
-    .reveal-delay-3 { transition-delay: 0.3s; }
+    /* Mobile portrait / small tablet */
+    @media (max-width:768px) {
+      section { padding:4.5rem 5vw; }
 
-    /* Grain overlay */
-    body::before {
-      content: '';
-      position: fixed; inset: 0; z-index: 999;
-      pointer-events: none;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
-      opacity: 0.025;
+      /* nav */
+      .nav-links { display:none; }
+      .nav-ham   { display:flex; }
+
+      /* hero */
+      .hero-content { padding:0 5vw 8vh; }
+      #hero { min-height:100svh; }
+
+      /* about: stack vertically */
+      #about { grid-template-columns:1fr; gap:2.5rem; }
+
+      /* spaces: single column */
+      .spaces-grid { grid-template-columns:1fr; max-width:480px; margin:0 auto; }
+
+      /* experience feats: keep 2-col on mobile */
+      .exp-feats { grid-template-columns:1fr 1fr; }
+      .exp-inner { gap:2.5rem; }
+
+      /* contact: stack vertically */
+      #contact { grid-template-columns:1fr; gap:3rem; }
+      .map-wrap { min-height:280px; }
+      .map-wrap iframe { min-height:280px; }
+
+      /* footer */
+      .footer-copy { width:100%; }
+    }
+
+    /* Small phones */
+    @media (max-width:480px) {
+      section { padding:4rem 5vw; }
+
+      .hero-title { font-size:2.6rem; }
+      .hero-sub   { font-size:.88rem; }
+
+      /* menu tabs: allow scroll if needed */
+      .menu-tabs { gap:.5rem; }
+      .menu-tab  { font-size:.76rem; padding:.42rem 1rem; }
+
+      /* dish grid single col */
+      .menu-panel.active { grid-template-columns:1fr; }
+
+      /* exp feats 2-col still fine */
+      .exp-feats { grid-template-columns:1fr 1fr; }
+
+      /* social row wraps */
+      .social-row { gap:.5rem; }
+      .social-btn { font-size:.74rem; padding:.5rem .95rem; }
+
+      /* gallery */
+      .gallery-scroll img { height:210px; }
+
+      /* footer */
+      .footer-links { gap:.75rem; }
     }
   </style>
 </head>
 <body>
 
-<!-- NAV -->
+<!-- ══ NAV ══ -->
 <nav id="navbar">
   <a class="nav-brand" href="#hero">
-    <span class="nav-owl">🦉</span>
-    <span class="nav-brand-text">Wise <span>Owl</span></span>
+    <span class="nav-logo">🦉</span>
+    <span class="nav-name">Wise <span>Owl</span></span>
   </a>
   <ul class="nav-links">
     <li><a href="#about">Our Story</a></li>
@@ -558,22 +601,29 @@
     <li><a href="#menu">Menu</a></li>
     <li><a href="#contact" class="nav-cta">Find Us</a></li>
   </ul>
+  <button class="nav-ham" id="navHam" onclick="toggleDrawer()" aria-label="Toggle menu">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
 
-<!-- HERO -->
+<!-- ══ MOBILE DRAWER ══ -->
+<div class="nav-drawer" id="navDrawer">
+  <a href="#about"   onclick="closeDrawer()">Our Story</a>
+  <a href="#spaces"  onclick="closeDrawer()">Spaces</a>
+  <a href="#menu"    onclick="closeDrawer()">Menu</a>
+  <a href="#contact" onclick="closeDrawer()">Find Us</a>
+</div>
+
+<!-- ══ HERO ══ -->
 <section id="hero">
   <div class="hero-bg" id="heroBg"></div>
   <div class="hero-content">
-    <div class="hero-eyebrow reveal">South Kolkata's Favourite Adda</div>
-    <h1 class="hero-title reveal reveal-delay-1">
-      Where <em>stories</em><br>find their flavour
-    </h1>
-    <p class="hero-sub reveal reveal-delay-2">
-      Fairy lights, fresh steaks & the warmth of old Kolkata. Three floors, one soul — since 2012.
-    </p>
-    <div class="hero-actions reveal reveal-delay-3">
+    <div class="hero-eyebrow">South Kolkata's Favourite Adda · Since 2012</div>
+    <h1 class="hero-title">Where <em>stories</em><br>find their flavour</h1>
+    <p class="hero-sub">Fairy lights, fresh steaks &amp; the warmth of old Kolkata. Three floors, one soul — since 2012.</p>
+    <div class="hero-actions">
       <a href="#spaces" class="btn-primary">🦉 Explore Our Spaces</a>
-      <a href="#menu" class="btn-outline">View Menu →</a>
+      <a href="#menu"   class="btn-outline">View Menu →</a>
     </div>
   </div>
   <div class="hero-badge">
@@ -587,164 +637,147 @@
   </div>
 </section>
 
-<!-- ABOUT -->
+<!-- ══ ABOUT ══ -->
 <section id="about">
   <div class="reveal">
-    <div class="section-label">Our Story</div>
-    <h2 class="section-title">A corner of Kolkata that never hurries</h2>
-    <p class="section-body">
-      Tucked behind Golpark on Purna Das Road, Wise Owl began as a dream — a place where morning joggers, daydreaming students and evening couples could all feel at home. Over a decade later, that dream still flickers under a canopy of fairy lights.
-    </p>
+    <div class="sec-label">Our Story</div>
+    <h2 class="sec-title">A corner of Kolkata that never hurries</h2>
+    <p class="sec-body">Tucked behind Golpark on Purna Das Road, Wise Owl began as a dream — a place where morning joggers, daydreaming students, and evening couples could all feel at home. Over a decade later, that dream still flickers under a canopy of fairy lights.</p>
     <div class="about-stats">
-      <div class="stat-card">
-        <div class="stat-num">12+</div>
-        <div class="stat-label">Years of stories</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-num">3</div>
-        <div class="stat-label">Unique dining spaces</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-num">7:30</div>
-        <div class="stat-label">AM — we open early</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-num">∞</div>
-        <div class="stat-label">Adda possibilities</div>
-      </div>
+      <div class="stat-card"><div class="stat-num">12+</div><div class="stat-label">Years of stories</div></div>
+      <div class="stat-card"><div class="stat-num">3</div><div class="stat-label">Unique dining spaces</div></div>
+      <div class="stat-card"><div class="stat-num">7:30</div><div class="stat-label">AM open daily</div></div>
+      <div class="stat-card"><div class="stat-num">∞</div><div class="stat-label">Adda possibilities</div></div>
     </div>
     <div class="about-quote">
       <p>"The best table in Kolkata isn't inside a grand hotel — it's under the fairy lights at Wise Owl."</p>
       <cite>— A regular since 2014</cite>
     </div>
   </div>
-  <div class="about-img-wrap reveal reveal-delay-2">
-    <img src="https://images.unsplash.com/photo-1600093463592-8e36ae95ef56?w=800&q=80" alt="Wise Owl ambience" />
+  <div class="about-img-wrap reveal d2">
+    <img src="https://images.unsplash.com/photo-1600093463592-8e36ae95ef56?w=800&fit=crop&q=82" alt="Wise Owl interior" loading="lazy"/>
   </div>
 </section>
 
-<!-- SPACES -->
+<!-- ══ SPACES ══ -->
 <section id="spaces">
   <div class="spaces-header">
     <div>
-      <div class="section-label reveal">Three Floors, One Soul</div>
-      <h2 class="section-title reveal">Choose your<br>perfect spot</h2>
+      <div class="sec-label reveal">Three Floors, One Soul</div>
+      <h2 class="sec-title reveal d1" style="color:var(--brown)">Choose your<br>perfect spot</h2>
     </div>
-    <p class="section-body reveal" style="max-width:320px; text-align:right">
-      Each level of Wise Owl holds its own mood and magic.
-    </p>
+    <p class="sec-body reveal d2" style="max-width:260px;text-align:right">Each level of Wise Owl holds its own mood and magic.</p>
   </div>
   <div class="spaces-grid">
-
     <div class="space-card reveal">
-      <img class="space-card-img" src="https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=600&q=80" alt="The Coffee Shop" />
+      <img class="space-card-img" src="https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=600&fit=crop&q=80" alt="The Coffee Shop" loading="lazy"/>
       <div class="space-card-body">
         <div class="space-floor">Ground Floor</div>
         <div class="space-name">The Coffee Shop</div>
         <div class="space-desc">Open-air energy, vibrant chatter, and the best breakfast in South Kolkata. Where your morning truly begins.</div>
-        <span class="space-tag">☕ Breakfast & Brews</span>
+        <span class="space-tag">☕ Breakfast &amp; Brews</span>
         <div class="space-hours">⏰ 7:30 AM – 11:00 PM</div>
       </div>
     </div>
-
-    <div class="space-card reveal reveal-delay-1">
-      <img class="space-card-img" src="https://images.unsplash.com/photo-1544025162-d76694265947?w=600&q=80" alt="The Steakhouse" />
+    <div class="space-card reveal d1">
+      <img class="space-card-img" src="https://images.unsplash.com/photo-1544025162-d76694265947?w=600&fit=crop&q=80" alt="The Steakhouse" loading="lazy"/>
       <div class="space-card-body">
         <div class="space-floor">Rooftop</div>
         <div class="space-name">The Steakhouse</div>
-        <div class="space-desc">Dimly lit and romantically quiet. Continental cuisine under the open sky — made for lingering dinners and soft conversation.</div>
-        <span class="space-tag">🥩 Steaks & Continental</span>
-        <div class="space-hours">⏰ Lunch & Dinner</div>
+        <div class="space-desc">Dimly lit and romantically quiet. Continental cuisine under the open sky — made for lingering dinners.</div>
+        <span class="space-tag">🥩 Steaks &amp; Continental</span>
+        <div class="space-hours">⏰ Lunch &amp; Dinner</div>
       </div>
     </div>
-
-    <div class="space-card reveal reveal-delay-2">
-      <img class="space-card-img" src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&q=80" alt="Charcoal" />
+    <div class="space-card reveal d2">
+      <img class="space-card-img" src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&fit=crop&q=80" alt="Charcoal" loading="lazy"/>
       <div class="space-card-body">
         <div class="space-floor">The Grill</div>
         <div class="space-name">Charcoal</div>
-        <div class="space-desc">The aroma of live coals and traditional spices. Indian grills and kebabs crafted the old-fashioned way — slow, aromatic, and soul-warming.</div>
-        <span class="space-tag">🔥 Grills & Kebabs</span>
+        <div class="space-desc">The aroma of live coals and traditional spices. Indian grills and kebabs the old-fashioned way.</div>
+        <span class="space-tag">🔥 Grills &amp; Kebabs</span>
         <div class="space-hours">⏰ Evenings onwards</div>
       </div>
     </div>
-
   </div>
 </section>
 
-<!-- MENU -->
+<!-- ══ MENU ══ -->
 <section id="menu">
   <div class="menu-header">
-    <div class="section-label reveal" style="color:var(--orange)">What We Cook</div>
-    <h2 class="section-title reveal" style="color:var(--cream)">Signature<br>Creations</h2>
-    <div class="menu-tabs reveal">
-      <button class="menu-tab active" onclick="switchTab('breakfast')">Breakfast</button>
-      <button class="menu-tab" onclick="switchTab('mains')">Mains</button>
-      <button class="menu-tab" onclick="switchTab('grill')">Grill & Kebabs</button>
-      <button class="menu-tab" onclick="switchTab('beverages')">Beverages</button>
+    <div class="sec-label reveal" style="color:var(--orange)">What We Cook</div>
+    <h2 class="sec-title reveal d1" style="color:var(--cream)">Signature<br>Creations</h2>
+    <div class="menu-tabs reveal d2">
+      <button class="menu-tab active" onclick="switchTab('breakfast',this)">Breakfast</button>
+      <button class="menu-tab"        onclick="switchTab('mains',this)">Mains</button>
+      <button class="menu-tab"        onclick="switchTab('grill',this)">Grill &amp; Kebabs</button>
+      <button class="menu-tab"        onclick="switchTab('beverages',this)">Beverages</button>
     </div>
   </div>
 
+  <!-- BREAKFAST -->
   <div class="menu-panel active" id="tab-breakfast">
     <div class="dish-card featured">
-      <img class="dish-img" src="https://images.unsplash.com/photo-1525351484163-7529414344d8?w=600&q=80" alt="Joey's Platter" />
+      <img class="dish-img" src="https://images.unsplash.com/photo-1525351484163-7529414344d8?w=600&fit=crop&q=80" alt="Joey's Platter" loading="lazy"/>
       <div class="dish-card-body">
         <div class="dish-badge">⭐ Signature</div>
         <div class="dish-name">Joey's Platter</div>
-        <div class="dish-desc">The quintessential Wise Owl breakfast. Eggs your way, crispy bacon, grilled sausages, sautéed mushrooms and golden toast. A full morning in a single plate.</div>
+        <div class="dish-desc">The quintessential Wise Owl breakfast. Eggs your way, crispy bacon, grilled sausages, sautéed mushrooms and golden toast.</div>
       </div>
     </div>
     <div class="dish-card">
-      <img class="dish-img" src="https://images.unsplash.com/photo-1608039829572-78524f79c4c7?w=600&q=80" alt="Eggs Benedictine" />
+      <img class="dish-img" src="https://images.unsplash.com/photo-1608039829572-78524f79c4c7?w=600&fit=crop&q=80" alt="Eggs Benedictine" loading="lazy"/>
       <div class="dish-card-body">
         <div class="dish-name">Eggs Benedictine</div>
         <div class="dish-desc">Poached eggs on toasted muffins with velvety hollandaise — a weekend ritual for regulars.</div>
       </div>
     </div>
     <div class="dish-card">
-      <img class="dish-img" src="https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=600&q=80" alt="Fluffy Pancake Stack" />
+      <img class="dish-img" src="https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=600&fit=crop&q=80" alt="Fluffy Pancake Stack" loading="lazy"/>
       <div class="dish-card-body">
         <div class="dish-name">Fluffy Pancake Stack</div>
         <div class="dish-desc">Thick buttermilk pancakes with maple, fresh berries and whipped cream. Morning indulgence, redefined.</div>
       </div>
     </div>
     <div class="dish-card">
-      <img class="dish-img" src="https://images.unsplash.com/photo-1517093728-9e0a22b4a4e0?w=600&q=80" alt="Overnight Oats" />
+      <!-- stable Unsplash URL for oats/granola -->
+      <img class="dish-img" src="https://images.unsplash.com/photo-1623428454614-abaf00244e52?w=600&fit=crop&q=80" alt="Overnight Oats and Granola" loading="lazy"/>
       <div class="dish-card-body">
-        <div class="dish-name">Overnight Oats & Granola</div>
-        <div class="dish-desc">For the health-conscious early bird. Cold-soaked oats with seasonal fruits and house granola.</div>
+        <div class="dish-name">Overnight Oats &amp; Granola</div>
+        <div class="dish-desc">For the health-conscious early bird. Cold-soaked oats with seasonal fruits and house-made granola.</div>
       </div>
     </div>
   </div>
 
+  <!-- MAINS -->
   <div class="menu-panel" id="tab-mains">
     <div class="dish-card featured">
-      <img class="dish-img" src="https://images.unsplash.com/photo-1432139509613-5c4255815697?w=600&q=80" alt="Chicken Rosemary Steak" />
+      <img class="dish-img" src="https://images.unsplash.com/photo-1432139509613-5c4255815697?w=600&fit=crop&q=80" alt="Chicken Rosemary Steak" loading="lazy"/>
       <div class="dish-card-body">
         <div class="dish-badge">⭐ Chef's Pride</div>
         <div class="dish-name">Chicken Rosemary Steak</div>
-        <div class="dish-desc">A tender chicken breast, marinated in fresh rosemary and garlic, pan-seared to perfection. The dish that made Wise Owl's rooftop legendary.</div>
+        <div class="dish-desc">Tender chicken breast in rosemary-garlic marinade, pan-seared to perfection. The dish that made Wise Owl's rooftop legendary.</div>
         <div class="dish-note">⏳ Made fresh — allow 35–45 min</div>
       </div>
     </div>
     <div class="dish-card featured">
-      <img class="dish-img" src="https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=600&q=80" alt="Grilled Bhetki" />
+      <img class="dish-img" src="https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=600&fit=crop&q=80" alt="Grilled Bhetki" loading="lazy"/>
       <div class="dish-card-body">
         <div class="dish-badge">⭐ Local Favourite</div>
         <div class="dish-name">Grilled Bhetki</div>
-        <div class="dish-desc">Fresh Bhetki fillet grilled whole and served with a bright lemon butter sauce. A Kolkata original with continental elegance.</div>
+        <div class="dish-desc">Fresh Bhetki fillet grilled whole with a bright lemon butter sauce. A Kolkata original with continental elegance.</div>
         <div class="dish-note">⏳ Made fresh — allow 30–40 min</div>
       </div>
     </div>
     <div class="dish-card">
-      <img class="dish-img" src="https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=600&q=80" alt="Spaghetti Aglio e Olio" />
+      <img class="dish-img" src="https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=600&fit=crop&q=80" alt="Spaghetti Aglio e Olio" loading="lazy"/>
       <div class="dish-card-body">
         <div class="dish-name">Spaghetti Aglio e Olio</div>
-        <div class="dish-desc">House-made pasta tossed with golden garlic, chilli flakes, parsley and premium olive oil. Simple, perfect.</div>
+        <div class="dish-desc">House-made pasta tossed with golden garlic, chilli flakes, parsley and premium olive oil.</div>
       </div>
     </div>
     <div class="dish-card">
-      <img class="dish-img" src="https://images.unsplash.com/photo-1547592180-85f173990554?w=600&q=80" alt="Continental Chicken Stew" />
+      <img class="dish-img" src="https://images.unsplash.com/photo-1547592180-85f173990554?w=600&fit=crop&q=80" alt="Continental Chicken Stew" loading="lazy"/>
       <div class="dish-card-body">
         <div class="dish-name">Continental Chicken Stew</div>
         <div class="dish-desc">Slow-simmered vegetables and chicken in a rich herb broth. The dish that feels like a hug.</div>
@@ -752,84 +785,86 @@
     </div>
   </div>
 
+  <!-- GRILL -->
   <div class="menu-panel" id="tab-grill">
     <div class="dish-card">
-      <img class="dish-img" src="https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?w=600&q=80" alt="Seekh Kebab" />
+      <img class="dish-img" src="https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?w=600&fit=crop&q=80" alt="Seekh Kebab" loading="lazy"/>
       <div class="dish-card-body">
         <div class="dish-name">Seekh Kebab</div>
-        <div class="dish-desc">Hand-minced chicken mixed with caramelized onions and aromatic spices, threaded and charcoal-grilled. Served with mint chutney.</div>
+        <div class="dish-desc">Hand-minced chicken with caramelized onions and aromatic spices, charcoal-grilled. Served with mint chutney.</div>
       </div>
     </div>
     <div class="dish-card">
-      <img class="dish-img" src="https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?w=600&q=80" alt="Tandoori Half Chicken" />
+      <img class="dish-img" src="https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?w=600&fit=crop&q=80" alt="Tandoori Half Chicken" loading="lazy"/>
       <div class="dish-card-body">
         <div class="dish-name">Tandoori Half Chicken</div>
-        <div class="dish-desc">Overnight marinated chicken, charred and smoky, arriving at the table still sizzling. A Charcoal classic.</div>
+        <div class="dish-desc">Overnight marinated chicken, charred and smoky, arriving still sizzling at the table.</div>
       </div>
     </div>
     <div class="dish-card">
-      <img class="dish-img" src="https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?w=600&q=80" alt="Paneer Tikka" />
+      <img class="dish-img" src="https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?w=600&fit=crop&q=80" alt="Paneer Tikka" loading="lazy"/>
       <div class="dish-card-body">
         <div class="dish-name">Paneer Tikka</div>
-        <div class="dish-desc">Thick paneer cubes in spiced yoghurt marinade, grilled in the charcoal oven until blistered and golden.</div>
+        <div class="dish-desc">Thick paneer cubes in spiced yoghurt marinade, grilled until blistered and golden.</div>
       </div>
     </div>
     <div class="dish-card">
-      <img class="dish-img" src="https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=600&q=80" alt="Mutton Galouti" />
+      <img class="dish-img" src="https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=600&fit=crop&q=80" alt="Mutton Galouti" loading="lazy"/>
       <div class="dish-card-body">
         <div class="dish-name">Mutton Galouti</div>
-        <div class="dish-desc">The softest kebab you'll ever have. Fine-ground mutton with 30+ spices, melting on a warm roomali roti.</div>
+        <div class="dish-desc">The softest kebab you'll ever have. Fine-ground mutton with 30+ spices on warm roomali roti.</div>
       </div>
     </div>
   </div>
 
+  <!-- BEVERAGES -->
   <div class="menu-panel" id="tab-beverages">
     <div class="dish-card featured">
-      <img class="dish-img" src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=600&q=80" alt="Special Cappuccino" />
+      <img class="dish-img" src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=600&fit=crop&q=80" alt="Special Cappuccino" loading="lazy"/>
       <div class="dish-card-body">
         <div class="dish-badge">⭐ House Special</div>
         <div class="dish-name">Special Cappuccino</div>
-        <div class="dish-desc">Our signature cappuccino — a double shot of medium-roast espresso, velvety microfoam and a dusting of dark cocoa. The reason mornings exist.</div>
+        <div class="dish-desc">Double espresso, velvety microfoam and a dusting of dark cocoa. The reason mornings exist.</div>
       </div>
     </div>
     <div class="dish-card">
-      <img class="dish-img" src="https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=600&q=80" alt="Cold Brew" />
+      <img class="dish-img" src="https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=600&fit=crop&q=80" alt="Cold Brew" loading="lazy"/>
       <div class="dish-card-body">
         <div class="dish-name">Cold Brew Single Origin</div>
-        <div class="dish-desc">12-hour cold-steeped single-origin coffee. Smooth, bold and ice cold — perfect for Kolkata afternoons.</div>
+        <div class="dish-desc">12-hour cold-steeped single-origin coffee. Smooth, bold, ice cold — perfect for Kolkata afternoons.</div>
       </div>
     </div>
     <div class="dish-card">
-      <img class="dish-img" src="https://images.unsplash.com/photo-1542990253-0d0f5be5f0ed?w=600&q=80" alt="Belgian Hot Chocolate" />
+      <img class="dish-img" src="https://images.unsplash.com/photo-1542990253-0d0f5be5f0ed?w=600&fit=crop&q=80" alt="Belgian Hot Chocolate" loading="lazy"/>
       <div class="dish-card-body">
         <div class="dish-name">Belgian Hot Chocolate</div>
-        <div class="dish-desc">Thick, rich, and intensely chocolatey. Made with real Belgian couverture. Not for the faint-hearted.</div>
+        <div class="dish-desc">Thick, rich, intensely chocolatey. Made with real Belgian couverture. Not for the faint-hearted.</div>
       </div>
     </div>
     <div class="dish-card">
-      <img class="dish-img" src="https://images.unsplash.com/photo-1497534446932-c925b458314e?w=600&q=80" alt="Fresh Lemonade" />
+      <img class="dish-img" src="https://images.unsplash.com/photo-1497534446932-c925b458314e?w=600&fit=crop&q=80" alt="Fresh Lemonade and Mocktails" loading="lazy"/>
       <div class="dish-card-body">
-        <div class="dish-name">Fresh Lemonade & Mocktails</div>
-        <div class="dish-desc">House-squeezed lemonades, fresh fruit mocktails, and seasonal coolers — rotating with the weather.</div>
+        <div class="dish-name">Fresh Lemonade &amp; Mocktails</div>
+        <div class="dish-desc">House-squeezed lemonades, fresh fruit mocktails and seasonal coolers — rotating with the weather.</div>
       </div>
     </div>
   </div>
 
-  <div class="slow-food-banner reveal">
+  <div class="slow-banner reveal">
     <div class="icon">🐢</div>
     <div>
       <strong>Our Slow Food Promise</strong>
-      <p>We believe great food cannot be rushed. Our main courses are cooked fresh to order — please allow 30–45 minutes. We promise it's worth every moment of waiting.</p>
+      <p>We believe great food cannot be rushed. Our main courses are cooked fresh to order — please allow 30–45 minutes. Worth every moment.</p>
     </div>
   </div>
 </section>
 
-<!-- EXPERIENCE STRIP -->
+<!-- ══ EXPERIENCE ══ -->
 <section id="experience">
-  <div class="experience-inner">
+  <div class="exp-inner">
     <div class="exp-text">
-      <h2>More than a meal — it's an <em>adda</em></h2>
-      <p>From the early morning jogger grabbing Joey's Platter, to the student who treats the Coffee Shop as a second home, to the couple celebrating quietly on the rooftop — Wise Owl belongs to everyone.</p>
+      <h2>More than a meal —<br>it's an <em>adda</em></h2>
+      <p>From the early morning jogger grabbing Joey's Platter, to the student who calls the Coffee Shop home, to the couple dining quietly on the rooftop — Wise Owl belongs to everyone.</p>
       <div class="exp-pills">
         <span class="pill">🌅 Earlybird Friendly</span>
         <span class="pill">💻 Freelancer Approved</span>
@@ -837,57 +872,40 @@
         <span class="pill">👨‍👩‍👧 Family Tables</span>
       </div>
     </div>
-    <div class="exp-features">
-      <div class="exp-feat">
-        <div class="ef-icon">🧚</div>
-        <div class="ef-title">Fairy Lights</div>
-        <div class="ef-sub">Magical outdoor canopy every evening</div>
-      </div>
-      <div class="exp-feat">
-        <div class="ef-icon">🦉</div>
-        <div class="ef-title">Owl Décor</div>
-        <div class="ef-sub">Whimsical and warm throughout</div>
-      </div>
-      <div class="exp-feat">
-        <div class="ef-icon">🌿</div>
-        <div class="ef-title">Greenery</div>
-        <div class="ef-sub">Lush plants framing every seat</div>
-      </div>
-      <div class="exp-feat">
-        <div class="ef-icon">🎶</div>
-        <div class="ef-title">Ambient Music</div>
-        <div class="ef-sub">Curated to match every mood</div>
-      </div>
+    <div class="exp-feats">
+      <div class="exp-feat"><div class="ef-icon">✨</div><div class="ef-title">Fairy Lights</div><div class="ef-sub">Magical canopy every evening</div></div>
+      <div class="exp-feat"><div class="ef-icon">🦉</div><div class="ef-title">Owl Décor</div><div class="ef-sub">Whimsical and warm throughout</div></div>
+      <div class="exp-feat"><div class="ef-icon">🌿</div><div class="ef-title">Greenery</div><div class="ef-sub">Lush plants framing every seat</div></div>
+      <div class="exp-feat"><div class="ef-icon">🎶</div><div class="ef-title">Ambient Music</div><div class="ef-sub">Curated to match every mood</div></div>
     </div>
   </div>
 </section>
 
-<!-- GALLERY -->
+<!-- ══ GALLERY ══ -->
 <section id="gallery">
   <div class="gallery-header">
-    <div class="section-label">The Atmosphere</div>
-    <h2 class="section-title">See it for yourself</h2>
+    <div class="sec-label">The Atmosphere</div>
+    <h2 class="sec-title" style="color:var(--brown)">See it for yourself</h2>
   </div>
   <div class="gallery-scroll">
-    <img src="https://images.unsplash.com/photo-1445116572660-236099ec97a0?w=400&q=80" alt="Cafe ambience" />
-    <img src="https://images.unsplash.com/photo-1493857671505-72967e2e2760?w=400&q=80" alt="Coffee" />
-    <img src="https://images.unsplash.com/photo-1544025162-d76694265947?w=400&q=80" alt="Steak" />
-    <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=400&q=80" alt="Grill" />
-    <img src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=400&q=80" alt="Coffee cup" />
-    <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=400&q=80" alt="Fine dining" />
-    <img src="https://images.unsplash.com/photo-1559339352-11d035aa65de?w=400&q=80" alt="Outdoor seating" />
+    <img src="https://images.unsplash.com/photo-1445116572660-236099ec97a0?w=500&fit=crop&q=80" alt="Cafe ambience" loading="lazy"/>
+    <img src="https://images.unsplash.com/photo-1493857671505-72967e2e2760?w=500&fit=crop&q=80" alt="Coffee" loading="lazy"/>
+    <img src="https://images.unsplash.com/photo-1544025162-d76694265947?w=500&fit=crop&q=80" alt="Steak" loading="lazy"/>
+    <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=500&fit=crop&q=80" alt="Restaurant" loading="lazy"/>
+    <img src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=500&fit=crop&q=80" alt="Coffee cup" loading="lazy"/>
+    <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=500&fit=crop&q=80" alt="Fine dining" loading="lazy"/>
+    <img src="https://images.unsplash.com/photo-1559339352-11d035aa65de?w=500&fit=crop&q=80" alt="Outdoor seating" loading="lazy"/>
   </div>
 </section>
 
-<!-- CONTACT -->
+<!-- ══ CONTACT ══ -->
 <section id="contact">
   <div>
-    <div class="section-label reveal" style="color:var(--orange)">Find Us</div>
-    <h2 class="section-title reveal" style="color:var(--cream)">Come say<br>hello 🦉</h2>
-    <p class="section-body reveal" style="color:var(--text-light)">
-      We're waiting for you on Purna Das Road, just a short walk from Golpark. Drop in any time — we're almost always here.
-    </p>
-    <div class="contact-cards reveal reveal-delay-1">
+    <div class="sec-label reveal" style="color:var(--orange)">Find Us</div>
+    <h2 class="sec-title reveal d1">Come say<br>hello 🦉</h2>
+    <p class="sec-body reveal d2">We're waiting for you on Purna Das Road, just a short walk from Golpark. Drop in any time — we're almost always here.</p>
+
+    <div class="contact-cards reveal d1">
       <div class="contact-card">
         <div class="cc-icon">📍</div>
         <div>
@@ -913,103 +931,120 @@
         </div>
       </div>
     </div>
-    <div class="social-row reveal reveal-delay-2">
-      <a href="https://www.instagram.com/wiseowlthecoffeeshop/" target="_blank" class="social-btn">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+
+    <div class="social-row reveal d2">
+      <a href="https://www.instagram.com/wiseowlthecoffeeshop/" target="_blank" rel="noopener" class="social-btn">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
         Instagram
       </a>
-      <a href="https://www.facebook.com/WiseOwlTheCoffeeShop/" target="_blank" class="social-btn">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
+      <a href="https://www.facebook.com/WiseOwlTheCoffeeShop/" target="_blank" rel="noopener" class="social-btn">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
         Facebook
       </a>
-      <a href="https://www.zomato.com/kolkata/wise-owl-the-coffee-shop-hindustan-park" target="_blank" class="social-btn">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
+      <a href="https://www.zomato.com/kolkata/wise-owl-the-coffee-shop-hindustan-park" target="_blank" rel="noopener" class="social-btn">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
         Zomato
       </a>
-      <a href="https://wa.me/917003647494" target="_blank" class="social-btn social-btn-wa">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      <a href="https://wa.me/917003647494" target="_blank" rel="noopener" class="social-btn wa">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
         WhatsApp
       </a>
     </div>
-    <div class="contact-form-wrap reveal reveal-delay-2">
+
+    <div class="form-wrap reveal d3">
       <h3>Request a Callback</h3>
-      <p>Leave your details and we'll get back to you — for reservations, events, or just a question.</p>
+      <p>Leave your details and we'll get back to you — for reservations, events, or any question.</p>
       <form class="cform" action="https://submit-form.com/fkJ24ELAg" method="POST">
-        <label for="name">Name</label>
-        <input type="text" id="name" name="name" placeholder="Your name" required />
-        <label for="email">Email</label>
-        <input type="email" id="email" name="email" placeholder="Your email" required />
-        <label for="message">Message</label>
-        <textarea id="message" name="message" placeholder="What's on your mind? (reservation, party booking, query…)" required></textarea>
+        <label for="f-name">Name</label>
+        <input type="text"  id="f-name"  name="name"    placeholder="Your name"  required autocomplete="name"/>
+        <label for="f-email">Email</label>
+        <input type="email" id="f-email" name="email"   placeholder="Your email" required autocomplete="email"/>
+        <label for="f-msg">Message</label>
+        <textarea           id="f-msg"   name="message" placeholder="Reservation, party booking, or any question…" required></textarea>
         <button type="submit" class="cform-btn">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
           Send Message
         </button>
       </form>
     </div>
   </div>
-  <div class="map-wrap reveal reveal-delay-1">
+
+  <div class="map-wrap reveal d1">
     <iframe
-      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3685.4!2d88.3697!3d22.5126!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a0276b7eb1bff0f%3A0x8b8e97b73cd4b2b5!2sWise+Owl+The+Coffee+Shop!5e0!3m2!1sen!2sin!4v1"
+      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3685.5143986898855!2d88.36512491444818!3d22.512622185213!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a0276b7eb1bff0f%3A0x8b8e97b73cd4b2b5!2sWise%20Owl%20The%20Coffee%20Shop!5e0!3m2!1sen!2sin!4v1680000000000"
       allowfullscreen loading="lazy"
-      referrerpolicy="no-referrer-when-downgrade">
+      referrerpolicy="no-referrer-when-downgrade"
+      title="Wise Owl on Google Maps">
     </iframe>
   </div>
 </section>
 
-<!-- FOOTER -->
+<!-- ══ FOOTER ══ -->
 <footer>
   <div>
     <div class="footer-brand">🦉 Wise <span>Owl</span></div>
     <div class="footer-tagline">The Coffee Shop · The Steakhouse · Charcoal</div>
   </div>
-  <div style="display:flex; gap:1rem; flex-wrap:wrap; align-items:center;">
-    <a href="https://www.instagram.com/wiseowlthecoffeeshop/" target="_blank" style="color:rgba(255,253,250,0.35); text-decoration:none; font-size:0.78rem; transition:color 0.2s;" onmouseover="this.style.color='#f39c12'" onmouseout="this.style.color='rgba(255,253,250,0.35)'">Instagram</a>
-    <a href="https://www.facebook.com/WiseOwlTheCoffeeShop/" target="_blank" style="color:rgba(255,253,250,0.35); text-decoration:none; font-size:0.78rem; transition:color 0.2s;" onmouseover="this.style.color='#f39c12'" onmouseout="this.style.color='rgba(255,253,250,0.35)'">Facebook</a>
-    <a href="https://www.zomato.com/kolkata/wise-owl-the-coffee-shop-hindustan-park" target="_blank" style="color:rgba(255,253,250,0.35); text-decoration:none; font-size:0.78rem; transition:color 0.2s;" onmouseover="this.style.color='#f39c12'" onmouseout="this.style.color='rgba(255,253,250,0.35)'">Zomato</a>
+  <div class="footer-links">
+    <a href="https://www.instagram.com/wiseowlthecoffeeshop/" target="_blank" rel="noopener">Instagram</a>
+    <a href="https://www.facebook.com/WiseOwlTheCoffeeShop/" target="_blank" rel="noopener">Facebook</a>
+    <a href="https://www.zomato.com/kolkata/wise-owl-the-coffee-shop-hindustan-park" target="_blank" rel="noopener">Zomato</a>
+    <a href="https://wa.me/917003647494" target="_blank" rel="noopener">WhatsApp</a>
   </div>
-  <div class="footer-copy">
-    66/2 B Purna Das Road, Kolkata 700029 · © 2025 Wise Owl. All rights reserved.
-  </div>
+  <div class="footer-copy">66/2 B Purna Das Road, Kolkata 700029 · © 2025 Wise Owl</div>
 </footer>
 
 <script>
-  // Sticky nav
+  /* ── NAV scroll ── */
   const navbar = document.getElementById('navbar');
   window.addEventListener('scroll', () => {
-    navbar.classList.toggle('scrolled', window.scrollY > 60);
-  });
+    navbar.classList.toggle('scrolled', window.scrollY > 50);
+  }, { passive: true });
 
-  // Parallax hero bg
+  /* ── Parallax hero (desktop only, disabled on mobile for perf) ── */
   const heroBg = document.getElementById('heroBg');
-  window.addEventListener('scroll', () => {
-    if (window.scrollY < window.innerHeight) {
-      heroBg.style.transform = `translateY(${window.scrollY * 0.3}px)`;
-    }
-  });
-
-  // Reveal on scroll
-  const reveals = document.querySelectorAll('.reveal');
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-  }, { threshold: 0.12 });
-  reveals.forEach(el => observer.observe(el));
-
-  // Menu tabs
-  function switchTab(id) {
-    document.querySelectorAll('.menu-tab').forEach((t, i) => {
-      const ids = ['breakfast','mains','grill','beverages'];
-      t.classList.toggle('active', ids[i] === id);
-    });
-    document.querySelectorAll('.menu-panel').forEach(p => {
-      p.classList.toggle('active', p.id === 'tab-' + id);
-    });
+  if (window.innerWidth > 768) {
+    window.addEventListener('scroll', () => {
+      if (window.scrollY < window.innerHeight) {
+        heroBg.style.transform = `translateY(${window.scrollY * 0.26}px)`;
+      }
+    }, { passive: true });
   }
 
-  // Trigger initial reveal for hero
-  document.querySelectorAll('#hero .reveal').forEach((el, i) => {
-    setTimeout(() => el.classList.add('visible'), 200 + i * 150);
-  });
+  /* ── Reveal on scroll ── */
+  const revEls = document.querySelectorAll('.reveal');
+  const ro = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); ro.unobserve(e.target); }
+    });
+  }, { threshold: 0.08 });
+  revEls.forEach(el => ro.observe(el));
+
+  /* ── Menu tabs ── */
+  function switchTab(id, btn) {
+    document.querySelectorAll('.menu-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.menu-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + id).classList.add('active');
+  }
+
+  /* ── Mobile drawer ── */
+  const ham    = document.getElementById('navHam');
+  const drawer = document.getElementById('navDrawer');
+
+  function toggleDrawer() {
+    const open = drawer.classList.toggle('open');
+    ham.classList.toggle('open', open);
+    document.body.style.overflow = open ? 'hidden' : '';
+  }
+  function closeDrawer() {
+    drawer.classList.remove('open');
+    ham.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  /* close drawer on outside tap */
+  drawer.addEventListener('click', e => { if (e.target === drawer) closeDrawer(); });
 </script>
 </body>
 </html>
